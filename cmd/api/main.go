@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/ABHIJNA18/strava-ai-coach/internal/database"
 	"github.com/ABHIJNA18/strava-ai-coach/internal/strava"
 	"github.com/joho/godotenv"
 )
@@ -19,19 +20,26 @@ func main() {
 		fmt.Println(".env file loaded successfully")
 	}
 
-	//get env variables
+	//create connect to databse
+	db, err := database.NewPostgresConnection()
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	//get strava env variables
 	clientID := os.Getenv("STRAVA_CLIENT_ID")
 	clientSecret := os.Getenv("STRAVA_CLIENT_SECRET")
 
 	if clientID == "" {
 		panic("STRAVA_CLIENT_ID environment variable is not set")
 	} else {
-		fmt.Println("STRAVA_CLIENT_ID fetched")
+		fmt.Println("Strava configuration loaded")
 	}
 	if clientSecret == "" {
 		panic("STRAVA_CLIENT_SECRET environment variable is not set")
 	} else {
-		fmt.Println("STRAVA_CLIENT_SECRET fetched")
+		fmt.Println("Strava configuration loaded")
 	}
 
 	//Health check endpoint
@@ -43,7 +51,7 @@ func main() {
 	http.HandleFunc("/login", strava.LoginHandler(clientID))
 
 	//callback endpoint
-	http.HandleFunc("/oauth/callback", strava.CallbackHandler(clientID, clientSecret))
+	http.HandleFunc("/oauth/callback", strava.CallbackHandler(clientID, clientSecret, db))
 
 	//verify server is running
 	fmt.Println("Server running on port 8080...")
