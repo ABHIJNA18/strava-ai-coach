@@ -40,3 +40,22 @@ func SaveAthlete(db *sql.DB, athlete Athlete) (int64, error) {
 	return athleteID, nil
 
 }
+
+func GetAthleteByStravaAthleteID ( db *sql.DB, stravaAthleteID int64 )(int64, error){
+	query := `
+		SELECT id
+		FROM athletes
+		WHERE strava_athlete_id = $1
+		`
+		var  athleteID int64
+
+		err := db.QueryRow(
+			query,
+			stravaAthleteID,
+			).Scan(&athleteID)
+		
+		if err != nil {
+			return 0, err
+		}
+		return athleteID, nil
+}
