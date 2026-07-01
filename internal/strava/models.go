@@ -25,6 +25,13 @@ type TokenResponse struct {
 	Athlete      Athlete `json:"athlete"`
 }
 
+type RefreshTokenRequest struct {
+	ClientID     string `json:"client_id"`
+	ClientSecret string `json:"client_secret"`
+	RefreshToken string `json:"refresh_token"`
+	GrantType    string `json:"grant_type"`
+}
+
 type Activity struct {
 	ID         int64   `json:"id"`
 	Name       string  `json:"name"`

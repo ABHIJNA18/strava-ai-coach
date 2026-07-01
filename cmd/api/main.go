@@ -47,6 +47,24 @@ func main() {
 		fmt.Fprintf(w, "Strava AI Coach running")
 	})
 
+	//test endpoint for tokem refresh logic
+	http.HandleFunc("/test-token", func(w http.ResponseWriter, r *http.Request) {
+
+		accessToken, err := strava.GetValidAccessToken(
+			db,
+			clientID,
+			clientSecret,
+			155503972,
+		)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Printf("Access Token Retrieved Successfully\n%s", accessToken)
+	})
+
 	//login endpoint
 	http.HandleFunc("/login", strava.LoginHandler(clientID))
 
