@@ -84,10 +84,10 @@ func CallbackHandler(clientID string, clientSecret string, db *sql.DB) http.Hand
 
 		fmt.Println("Tokens saved to DB sucessfully")
 
-		//get activities using access token
-		activities, err := GetActivities(tokenResponse.AccessToken)
+		//get all the activities using access token
+		activities, err := GetAllActivities(tokenResponse.AccessToken)
 		if err != nil {
-			http.Error(w, "Failed to fetch activities", http.StatusInternalServerError)
+			http.Error(w, "Failed to fetch all activities", http.StatusInternalServerError)
 			return
 		}
 		fmt.Printf(" %d Activities fetched successfully :", len(activities))
