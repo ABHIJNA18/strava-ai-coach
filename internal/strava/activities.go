@@ -38,8 +38,8 @@ func GetActivities(accessToken string) ([]Activity, error) {
 	fmt.Println("========== ACTIVITIES ==========")
 	//fmt.Printf("Fetched activities %+v ", activities)
 	for _, activity := range activities {
-		fmt.Printf(" ID : %d | Name : %s | Type : %s | Distance : %.2f km | Start Date : %s \n",
-			activity.ID, activity.Name, activity.Type, activity.Distance/1000, activity.StartDate)
+		fmt.Printf(" ID : %d | Name : %s | Type : %s | Distance : %.2f km | Start Date : %s | HR: %.1f | MaxHR: %.1f | Speed: %.2f | Suffer: %.1f \n",
+			activity.ID, activity.Name, activity.Type, activity.Distance/1000, activity.StartDate, activity.AverageHeartrate, activity.MaxHeartrate, activity.AverageSpeed, activity.SufferScore)
 	}
 	return activities, nil
 

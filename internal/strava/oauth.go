@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/ABHIJNA18/strava-ai-coach/internal/database"
 )
@@ -91,6 +92,68 @@ func CallbackHandler(clientID string, clientSecret string, db *sql.DB) http.Hand
 		}
 		fmt.Printf(" %d Activities fetched successfully :", len(activities))
 		fmt.Fprintf(w, " %d Activities fetched successfully :", len(activities))
+
+		//creating the variable of type database.Activities to insert into DB
+		var dbActivities []database.Activity
+
+		//parse timestamps and append
+		for _, activity := range activities {
+
+			startDate, err := time.Parse(time.RFC3339, activity.StartDate)
+			if err != nil {
+				return
+			}
+
+			startDateLocal, err := time.Parse(time.RFC3339, activity.StartDateLocal)
+			if err != nil {
+				return
+			}
+
+			dbActivities = append(
+				dbActivities,
+				database.Activity{
+
+					StravaActivityID:     activity.ID,
+					AthleteID:            athleteID,
+					Name:                 activity.Name,
+					Type:                 activity.Type,
+					SportType:            activity.SportType,
+					Distance:             activity.Distance,
+					MovingTime:           activity.MovingTime,
+					ElapsedTime:          activity.ElapsedTime,
+					TotalElevationGain:   activity.TotalElevationGain,
+					AverageSpeed:         activity.AverageSpeed,
+					MaxSpeed:             activity.MaxSpeed,
+					AverageHeartrate:     activity.AverageHeartrate,
+					MaxHeartrate:         activity.MaxHeartrate,
+					AverageCadence:       activity.AverageCadence,
+					AverageWatts:         activity.AverageWatts,
+					MaxWatts:             activity.MaxWatts,
+					WeightedAverageWatts: activity.WeightedAverageWatts,
+					Kilojoules:           activity.Kilojoules,
+					SufferScore:          activity.SufferScore,
+					DeviceName:           activity.DeviceName,
+					StartDate:            startDate,
+					StartDateLocal:       startDateLocal,
+				},
+			)
+
+		}
+
+		err = database.SaveActivities(db, dbActivities)
+
+		if err != nil {
+			fmt.Println(
+				"Failed to save activities:",
+				err,
+			)
+			return
+		}
+
+		fmt.Printf(
+			"\n %d activities saved successfully\n",
+			len(dbActivities),
+		)
 
 	}
 }
