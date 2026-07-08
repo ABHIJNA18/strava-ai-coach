@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/ABHIJNA18/strava-ai-coach/internal/database"
-	"github.com/ABHIJNA18/strava-ai-coach/internal/strava"
+	"github.com/ABHIJNA18/strava-ai-coach/internal/handlers"
 	"github.com/joho/godotenv"
 )
 
@@ -42,36 +42,53 @@ func main() {
 		fmt.Println("Strava configuration loaded")
 	}
 
+	//auth and activity handlers
+	activityHandler := handlers.NewActivityHandler(db)
+	authHandler := handlers.NewAuthHandler(db, clientID, clientSecret)
+
 	//Health check endpoint
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Strava AI Coach running")
 	})
 
-	//test endpoint for tokem refresh logic
-	http.HandleFunc("/test-token", func(w http.ResponseWriter, r *http.Request) {
+	//==== AUTH ENDPOINTS  =====
 
-		accessToken, err := strava.GetValidAccessToken(
-			db,
-			clientID,
-			clientSecret,
-			155503972,
-		)
-
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		fmt.Printf("Access Token Retrieved Successfully\n%s", accessToken)
-	})
-
-	//login endpoint
-	http.HandleFunc("/login", strava.LoginHandler(clientID))
-
+	http.HandleFunc("/login", authHandler.Login)
 	//callback endpoint
-	http.HandleFunc("/oauth/callback", strava.CallbackHandler(clientID, clientSecret, db))
+	http.HandleFunc("/oauth/callback", authHandler.Callback)
+
+	//==== ACTIVITY ENDPOINTS =====
+
+	http.HandleFunc("/stats", activityHandler.GetStats)
+	http.HandleFunc("/activities", activityHandler.GetActivities)
+	http.HandleFunc("/activities/runs", activityHandler.GetRuns)
+	http.HandleFunc("/activities/hikes", activityHandler.GetHikes)
+	http.HandleFunc("/activities/weight-training", activityHandler.GetWeightTraining)
+	http.HandleFunc("/activities/recent", activityHandler.GetRecentActivities)
+	http.HandleFunc("/activities/recent/runs", activityHandler.GetRecentRuns)
+	http.HandleFunc("/activities/recent/hikes", activityHandler.GetRecentHikes)
+	http.HandleFunc("/activities/recent/weight-training", activityHandler.GetRecentWeightTraining)
 
 	//verify server is running
 	fmt.Println("Server running on port 8080...")
 	http.ListenAndServe(":8080", nil)
 }
+
+/*test endpoint for tokem refresh logic
+http.HandleFunc("/test-token", func(w http.ResponseWriter, r *http.Request) {
+
+	accessToken, err := strava.GetValidAccessToken(
+		db,
+		clientID,
+		clientSecret,
+		155503972,
+	)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Printf("Access Token Retrieved Successfully\n%s", accessToken)
+})
+*/

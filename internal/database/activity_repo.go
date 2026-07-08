@@ -96,3 +96,452 @@ func SaveActivities(db *sql.DB, activities []Activity) error {
 	return nil
 
 }
+
+func GetActivityStats(db *sql.DB, athleteID int64) (*ActivityStats, error) {
+	query := `
+		SELECT 
+			COUNT(*) AS total_activities,
+
+			COUNT (*) FILTER (
+				WHERE sport_type = 'Run'
+				)AS total_runs,
+
+			COUNT (*) FILTER (
+				WHERE sport_type = 'Hike'
+				)AS total_hikes,
+
+			COUNT(*) FILTER (
+				WHERE sport_type = 'WeightTraining'
+				) AS total_weight_training,
+
+			COALESCE(SUM(distance), 0),
+
+			COALESCE (
+				SUM (distance)
+				FILTER (WHERE sport_type = 'Run'),
+				0
+			),
+
+			COALESCE (
+				SUM(distance)
+				FILTER (WHERE sport_type = 'Hike'),
+				0
+			),
+
+			COALESCE(
+				AVG(average_heartrate)
+				FILTER (WHERE average_heartrate > 0),
+				0
+			) AS average_heart_rate,
+
+			COALESCE(
+				AVG(average_heartrate)
+				FILTER (
+					WHERE sport_type = 'Run'
+					AND average_heartrate > 0
+				),
+				0
+			) AS average_run_heart_rate,
+
+
+			COALESCE(
+				MAX(distance)
+				FILTER (WHERE sport_type='Run'),
+				0
+			),
+
+			COALESCE(
+				MAX(distance)
+				FILTER (WHERE sport_type='Hike'),
+				0
+			)
+
+		FROM activities
+		WHERE athlete_id = $1
+	
+	`
+
+	var stats ActivityStats
+
+	err := db.QueryRow(
+		query,
+		athleteID,
+	).Scan(
+		&stats.TotalActivities,
+		&stats.TotalRuns,
+		&stats.TotalHikes,
+		&stats.TotalWeightTraining,
+		&stats.TotalDistance,
+		&stats.TotalRunDistance,
+		&stats.TotalHikeDistance,
+		&stats.AverageHeartRate,
+		&stats.AverageRunHeartRate,
+		&stats.LongestRunDistance,
+		&stats.LongestHikeDistance,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &stats, nil
+}
+
+func GetActivitiesByAthleteID(
+	db *sql.DB,
+	athleteID int64,
+) ([]Activity, error) {
+
+	query := `
+	SELECT
+		id,
+		strava_activity_id,
+		athlete_id,
+		name,
+		type,
+		sport_type,
+		distance,
+		moving_time,
+		elapsed_time,
+		total_elevation_gain,
+		average_speed,
+		max_speed,
+		average_heartrate,
+		max_heartrate,
+		average_cadence,
+		average_watts,
+		max_watts,
+		weighted_average_watts,
+		kilojoules,
+		suffer_score,
+		device_name,
+		start_date,
+		start_date_local,
+		created_at
+	FROM activities
+	WHERE athlete_id = $1
+	ORDER BY start_date DESC
+	`
+
+	rows, err := db.Query(
+		query,
+		athleteID,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var activities []Activity
+
+	for rows.Next() {
+
+		var activity Activity
+
+		err := rows.Scan(
+			&activity.ID,
+			&activity.StravaActivityID,
+			&activity.AthleteID,
+			&activity.Name,
+			&activity.Type,
+			&activity.SportType,
+			&activity.Distance,
+			&activity.MovingTime,
+			&activity.ElapsedTime,
+			&activity.TotalElevationGain,
+			&activity.AverageSpeed,
+			&activity.MaxSpeed,
+			&activity.AverageHeartrate,
+			&activity.MaxHeartrate,
+			&activity.AverageCadence,
+			&activity.AverageWatts,
+			&activity.MaxWatts,
+			&activity.WeightedAverageWatts,
+			&activity.Kilojoules,
+			&activity.SufferScore,
+			&activity.DeviceName,
+			&activity.StartDate,
+			&activity.StartDateLocal,
+			&activity.CreatedAt,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		activities = append(
+			activities,
+			activity,
+		)
+	}
+
+	return activities, nil
+}
+
+func GetActivitiesByType(
+
+	db *sql.DB,
+	athleteID int64,
+	sportType string,
+
+) ([]Activity, error) {
+
+	query := `
+	SELECT
+		id,
+		strava_activity_id,
+		athlete_id,
+		name,
+		type,
+		sport_type,
+		distance,
+		moving_time,
+		elapsed_time,
+		total_elevation_gain,
+		average_speed,
+		max_speed,
+		average_heartrate,
+		max_heartrate,
+		average_cadence,
+		average_watts,
+		max_watts,
+		weighted_average_watts,
+		kilojoules,
+		suffer_score,
+		device_name,
+		start_date,
+		start_date_local,
+		created_at
+	FROM activities
+	WHERE athlete_id = $1
+	AND sport_type = $2
+	ORDER BY start_date DESC
+	`
+
+	rows, err := db.Query(query, athleteID, sportType)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	//iterate through rows and fill in each activity and append to activities
+
+	var activities []Activity
+
+	for rows.Next() {
+		var activity Activity
+
+		err := rows.Scan(
+			&activity.ID,
+			&activity.StravaActivityID,
+			&activity.AthleteID,
+			&activity.Name,
+			&activity.Type,
+			&activity.SportType,
+			&activity.Distance,
+			&activity.MovingTime,
+			&activity.ElapsedTime,
+			&activity.TotalElevationGain,
+			&activity.AverageSpeed,
+			&activity.MaxSpeed,
+			&activity.AverageHeartrate,
+			&activity.MaxHeartrate,
+			&activity.AverageCadence,
+			&activity.AverageWatts,
+			&activity.MaxWatts,
+			&activity.WeightedAverageWatts,
+			&activity.Kilojoules,
+			&activity.SufferScore,
+			&activity.DeviceName,
+			&activity.StartDate,
+			&activity.StartDateLocal,
+			&activity.CreatedAt,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		activities = append(activities, activity)
+	}
+	return activities, nil
+}
+
+func GetRecentActivitiesByType(
+	db *sql.DB,
+	athleteID int64,
+	sportType string,
+	limit int,
+) ([]Activity, error) {
+
+	query := `
+	SELECT
+		id,
+		strava_activity_id,
+		athlete_id,
+		name,
+		type,
+		sport_type,
+		distance,
+		moving_time,
+		elapsed_time,
+		total_elevation_gain,
+		average_speed,
+		max_speed,
+		average_heartrate,
+		max_heartrate,
+		average_cadence,
+		average_watts,
+		max_watts,
+		weighted_average_watts,
+		kilojoules,
+		suffer_score,
+		device_name,
+		start_date,
+		start_date_local,
+		created_at
+	FROM activities
+	WHERE athlete_id = $1
+	AND sport_type = $2
+	ORDER BY start_date DESC
+	LIMIT $3
+	`
+	rows, err := db.Query(query, athleteID, sportType, limit)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	//iterate through rows and fill in each activity and append to activities
+
+	var activities []Activity
+
+	for rows.Next() {
+		var activity Activity
+
+		err := rows.Scan(
+			&activity.ID,
+			&activity.StravaActivityID,
+			&activity.AthleteID,
+			&activity.Name,
+			&activity.Type,
+			&activity.SportType,
+			&activity.Distance,
+			&activity.MovingTime,
+			&activity.ElapsedTime,
+			&activity.TotalElevationGain,
+			&activity.AverageSpeed,
+			&activity.MaxSpeed,
+			&activity.AverageHeartrate,
+			&activity.MaxHeartrate,
+			&activity.AverageCadence,
+			&activity.AverageWatts,
+			&activity.MaxWatts,
+			&activity.WeightedAverageWatts,
+			&activity.Kilojoules,
+			&activity.SufferScore,
+			&activity.DeviceName,
+			&activity.StartDate,
+			&activity.StartDateLocal,
+			&activity.CreatedAt,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		activities = append(activities, activity)
+	}
+	return activities, nil
+}
+
+func GetRecentActivities(
+	db *sql.DB,
+	athleteID int64,
+	limit int,
+) ([]Activity, error) {
+
+	query := `
+	SELECT
+		id,
+		strava_activity_id,
+		athlete_id,
+		name,
+		type,
+		sport_type,
+		distance,
+		moving_time,
+		elapsed_time,
+		total_elevation_gain,
+		average_speed,
+		max_speed,
+		average_heartrate,
+		max_heartrate,
+		average_cadence,
+		average_watts,
+		max_watts,
+		weighted_average_watts,
+		kilojoules,
+		suffer_score,
+		device_name,
+		start_date,
+		start_date_local,
+		created_at
+	FROM activities
+	WHERE athlete_id = $1
+	ORDER BY start_date DESC
+	LIMIT $2
+	`
+	rows, err := db.Query(query, athleteID, limit)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	//iterate through rows and fill in each activity and append to activities
+
+	var activities []Activity
+
+	for rows.Next() {
+		var activity Activity
+
+		err := rows.Scan(
+			&activity.ID,
+			&activity.StravaActivityID,
+			&activity.AthleteID,
+			&activity.Name,
+			&activity.Type,
+			&activity.SportType,
+			&activity.Distance,
+			&activity.MovingTime,
+			&activity.ElapsedTime,
+			&activity.TotalElevationGain,
+			&activity.AverageSpeed,
+			&activity.MaxSpeed,
+			&activity.AverageHeartrate,
+			&activity.MaxHeartrate,
+			&activity.AverageCadence,
+			&activity.AverageWatts,
+			&activity.MaxWatts,
+			&activity.WeightedAverageWatts,
+			&activity.Kilojoules,
+			&activity.SufferScore,
+			&activity.DeviceName,
+			&activity.StartDate,
+			&activity.StartDateLocal,
+			&activity.CreatedAt,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		activities = append(activities, activity)
+	}
+	return activities, nil
+}
