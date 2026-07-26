@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package coach;
+
+option go_package = "github.com/ABHIJNA18/strava-ai-coach/proto/generated/coach";
+
+service CoachService {
+  rpc Ping(PingRequest) returns (PingResponse);
+}
+
+message PingRequest {
+}
+
+message PingResponse {
+  string message = 1;
+}
