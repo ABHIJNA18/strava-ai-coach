@@ -8,6 +8,8 @@ import (
 	"github.com/ABHIJNA18/strava-ai-coach/internal/database"
 	"github.com/ABHIJNA18/strava-ai-coach/internal/handlers"
 	"github.com/joho/godotenv"
+	"context"
+    coachpb "github.com/ABHIJNA18/strava-ai-coach/proto/generated/coach"
 )
 
 func main() {
@@ -26,6 +28,22 @@ func main() {
 		panic(err)
 	}
 	defer db.Close()
+
+	// Connect to Python Coach Service
+	coachClient, coachConn, err := NewCoachClient()
+	if err != nil {
+		panic(err)
+	}
+	defer coachConn.Close()
+	ctx := context.Background()
+
+	response, err := coachClient.Ping(ctx, &coachpb.PingRequest{})
+
+	if err != nil {
+	panic(err)
+	}
+	fmt.Println(response.Message)
+
 
 	//get strava env variables
 	clientID := os.Getenv("STRAVA_CLIENT_ID")
