@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-from . import coach_pb2 as coach__pb2
+from . import coach_pb2 as coach__pb2 
 
 GRPC_GENERATED_VERSION = '1.83.0'
 GRPC_VERSION = grpc.__version__
@@ -34,17 +34,17 @@ class CoachServiceStub:
         Args:
             channel: A grpc.Channel.
         """
-        self.Ping = channel.unary_unary(
-                '/coach.CoachService/Ping',
-                request_serializer=coach__pb2.PingRequest.SerializeToString,
-                response_deserializer=coach__pb2.PingResponse.FromString,
+        self.AnalyzeActivities = channel.unary_unary(
+                '/coach.CoachService/AnalyzeActivities',
+                request_serializer=coach__pb2.AnalyzeActivitiesRequest.SerializeToString,
+                response_deserializer=coach__pb2.AnalyzeActivitiesResponse.FromString,
                 _registered_method=True)
 
 
 class CoachServiceServicer:
     """Missing associated documentation comment in .proto file."""
 
-    def Ping(self, request, context):
+    def AnalyzeActivities(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -53,10 +53,10 @@ class CoachServiceServicer:
 
 def add_CoachServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'Ping': grpc.unary_unary_rpc_method_handler(
-                    servicer.Ping,
-                    request_deserializer=coach__pb2.PingRequest.FromString,
-                    response_serializer=coach__pb2.PingResponse.SerializeToString,
+            'AnalyzeActivities': grpc.unary_unary_rpc_method_handler(
+                    servicer.AnalyzeActivities,
+                    request_deserializer=coach__pb2.AnalyzeActivitiesRequest.FromString,
+                    response_serializer=coach__pb2.AnalyzeActivitiesResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -70,7 +70,7 @@ class CoachService:
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def Ping(request,
+    def AnalyzeActivities(request,
             target,
             options=(),
             channel_credentials=None,
@@ -83,9 +83,9 @@ class CoachService:
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/coach.CoachService/Ping',
-            coach__pb2.PingRequest.SerializeToString,
-            coach__pb2.PingResponse.FromString,
+            '/coach.CoachService/AnalyzeActivities',
+            coach__pb2.AnalyzeActivitiesRequest.SerializeToString,
+            coach__pb2.AnalyzeActivitiesResponse.FromString,
             options,
             channel_credentials,
             insecure,

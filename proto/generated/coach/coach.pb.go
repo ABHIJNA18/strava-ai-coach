@@ -21,26 +21,37 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type PingRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+type Activity struct {
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	Id                 int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name               string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	SportType          string                 `protobuf:"bytes,3,opt,name=sport_type,json=sportType,proto3" json:"sport_type,omitempty"`
+	Distance           float32                `protobuf:"fixed32,4,opt,name=distance,proto3" json:"distance,omitempty"`                             // meters
+	MovingTime         int32                  `protobuf:"varint,5,opt,name=moving_time,json=movingTime,proto3" json:"moving_time,omitempty"`        // seconds
+	AverageSpeed       float32                `protobuf:"fixed32,6,opt,name=average_speed,json=averageSpeed,proto3" json:"average_speed,omitempty"` // meters/second
+	AverageHeartrate   float32                `protobuf:"fixed32,7,opt,name=average_heartrate,json=averageHeartrate,proto3" json:"average_heartrate,omitempty"`
+	MaxHeartrate       float32                `protobuf:"fixed32,8,opt,name=max_heartrate,json=maxHeartrate,proto3" json:"max_heartrate,omitempty"`
+	AverageCadence     float32                `protobuf:"fixed32,9,opt,name=average_cadence,json=averageCadence,proto3" json:"average_cadence,omitempty"`
+	TotalElevationGain int32                  `protobuf:"varint,10,opt,name=total_elevation_gain,json=totalElevationGain,proto3" json:"total_elevation_gain,omitempty"` // meters
+	StartDate          string                 `protobuf:"bytes,11,opt,name=start_date,json=startDate,proto3" json:"start_date,omitempty"`                               // ISO8601
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
-func (x *PingRequest) Reset() {
-	*x = PingRequest{}
+func (x *Activity) Reset() {
+	*x = Activity{}
 	mi := &file_proto_coach_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *PingRequest) String() string {
+func (x *Activity) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*PingRequest) ProtoMessage() {}
+func (*Activity) ProtoMessage() {}
 
-func (x *PingRequest) ProtoReflect() protoreflect.Message {
+func (x *Activity) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_coach_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -52,32 +63,110 @@ func (x *PingRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PingRequest.ProtoReflect.Descriptor instead.
-func (*PingRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use Activity.ProtoReflect.Descriptor instead.
+func (*Activity) Descriptor() ([]byte, []int) {
 	return file_proto_coach_proto_rawDescGZIP(), []int{0}
 }
 
-type PingResponse struct {
+func (x *Activity) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *Activity) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Activity) GetSportType() string {
+	if x != nil {
+		return x.SportType
+	}
+	return ""
+}
+
+func (x *Activity) GetDistance() float32 {
+	if x != nil {
+		return x.Distance
+	}
+	return 0
+}
+
+func (x *Activity) GetMovingTime() int32 {
+	if x != nil {
+		return x.MovingTime
+	}
+	return 0
+}
+
+func (x *Activity) GetAverageSpeed() float32 {
+	if x != nil {
+		return x.AverageSpeed
+	}
+	return 0
+}
+
+func (x *Activity) GetAverageHeartrate() float32 {
+	if x != nil {
+		return x.AverageHeartrate
+	}
+	return 0
+}
+
+func (x *Activity) GetMaxHeartrate() float32 {
+	if x != nil {
+		return x.MaxHeartrate
+	}
+	return 0
+}
+
+func (x *Activity) GetAverageCadence() float32 {
+	if x != nil {
+		return x.AverageCadence
+	}
+	return 0
+}
+
+func (x *Activity) GetTotalElevationGain() int32 {
+	if x != nil {
+		return x.TotalElevationGain
+	}
+	return 0
+}
+
+func (x *Activity) GetStartDate() string {
+	if x != nil {
+		return x.StartDate
+	}
+	return ""
+}
+
+type AnalyzeActivitiesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	AthleteId     int64                  `protobuf:"varint,1,opt,name=athlete_id,json=athleteId,proto3" json:"athlete_id,omitempty"`
+	Activities    []*Activity            `protobuf:"bytes,2,rep,name=activities,proto3" json:"activities,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *PingResponse) Reset() {
-	*x = PingResponse{}
+func (x *AnalyzeActivitiesRequest) Reset() {
+	*x = AnalyzeActivitiesRequest{}
 	mi := &file_proto_coach_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *PingResponse) String() string {
+func (x *AnalyzeActivitiesRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*PingResponse) ProtoMessage() {}
+func (*AnalyzeActivitiesRequest) ProtoMessage() {}
 
-func (x *PingResponse) ProtoReflect() protoreflect.Message {
+func (x *AnalyzeActivitiesRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_coach_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -89,14 +178,65 @@ func (x *PingResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PingResponse.ProtoReflect.Descriptor instead.
-func (*PingResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use AnalyzeActivitiesRequest.ProtoReflect.Descriptor instead.
+func (*AnalyzeActivitiesRequest) Descriptor() ([]byte, []int) {
 	return file_proto_coach_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *PingResponse) GetMessage() string {
+func (x *AnalyzeActivitiesRequest) GetAthleteId() int64 {
 	if x != nil {
-		return x.Message
+		return x.AthleteId
+	}
+	return 0
+}
+
+func (x *AnalyzeActivitiesRequest) GetActivities() []*Activity {
+	if x != nil {
+		return x.Activities
+	}
+	return nil
+}
+
+type AnalyzeActivitiesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Summary       string                 `protobuf:"bytes,1,opt,name=summary,proto3" json:"summary,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AnalyzeActivitiesResponse) Reset() {
+	*x = AnalyzeActivitiesResponse{}
+	mi := &file_proto_coach_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AnalyzeActivitiesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AnalyzeActivitiesResponse) ProtoMessage() {}
+
+func (x *AnalyzeActivitiesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_coach_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AnalyzeActivitiesResponse.ProtoReflect.Descriptor instead.
+func (*AnalyzeActivitiesResponse) Descriptor() ([]byte, []int) {
+	return file_proto_coach_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *AnalyzeActivitiesResponse) GetSummary() string {
+	if x != nil {
+		return x.Summary
 	}
 	return ""
 }
@@ -105,12 +245,33 @@ var File_proto_coach_proto protoreflect.FileDescriptor
 
 const file_proto_coach_proto_rawDesc = "" +
 	"\n" +
-	"\x11proto/coach.proto\x12\x05coach\"\r\n" +
-	"\vPingRequest\"(\n" +
-	"\fPingResponse\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage2?\n" +
-	"\fCoachService\x12/\n" +
-	"\x04Ping\x12\x12.coach.PingRequest\x1a\x13.coach.PingResponseB<Z:github.com/ABHIJNA18/strava-ai-coach/proto/generated/coachb\x06proto3"
+	"\x11proto/coach.proto\x12\x05coach\"\xfb\x02\n" +
+	"\bActivity\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1d\n" +
+	"\n" +
+	"sport_type\x18\x03 \x01(\tR\tsportType\x12\x1a\n" +
+	"\bdistance\x18\x04 \x01(\x02R\bdistance\x12\x1f\n" +
+	"\vmoving_time\x18\x05 \x01(\x05R\n" +
+	"movingTime\x12#\n" +
+	"\raverage_speed\x18\x06 \x01(\x02R\faverageSpeed\x12+\n" +
+	"\x11average_heartrate\x18\a \x01(\x02R\x10averageHeartrate\x12#\n" +
+	"\rmax_heartrate\x18\b \x01(\x02R\fmaxHeartrate\x12'\n" +
+	"\x0faverage_cadence\x18\t \x01(\x02R\x0eaverageCadence\x120\n" +
+	"\x14total_elevation_gain\x18\n" +
+	" \x01(\x05R\x12totalElevationGain\x12\x1d\n" +
+	"\n" +
+	"start_date\x18\v \x01(\tR\tstartDate\"j\n" +
+	"\x18AnalyzeActivitiesRequest\x12\x1d\n" +
+	"\n" +
+	"athlete_id\x18\x01 \x01(\x03R\tathleteId\x12/\n" +
+	"\n" +
+	"activities\x18\x02 \x03(\v2\x0f.coach.ActivityR\n" +
+	"activities\"5\n" +
+	"\x19AnalyzeActivitiesResponse\x12\x18\n" +
+	"\asummary\x18\x01 \x01(\tR\asummary2f\n" +
+	"\fCoachService\x12V\n" +
+	"\x11AnalyzeActivities\x12\x1f.coach.AnalyzeActivitiesRequest\x1a .coach.AnalyzeActivitiesResponseB<Z:github.com/ABHIJNA18/strava-ai-coach/proto/generated/coachb\x06proto3"
 
 var (
 	file_proto_coach_proto_rawDescOnce sync.Once
@@ -124,19 +285,21 @@ func file_proto_coach_proto_rawDescGZIP() []byte {
 	return file_proto_coach_proto_rawDescData
 }
 
-var file_proto_coach_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_proto_coach_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_proto_coach_proto_goTypes = []any{
-	(*PingRequest)(nil),  // 0: coach.PingRequest
-	(*PingResponse)(nil), // 1: coach.PingResponse
+	(*Activity)(nil),                  // 0: coach.Activity
+	(*AnalyzeActivitiesRequest)(nil),  // 1: coach.AnalyzeActivitiesRequest
+	(*AnalyzeActivitiesResponse)(nil), // 2: coach.AnalyzeActivitiesResponse
 }
 var file_proto_coach_proto_depIdxs = []int32{
-	0, // 0: coach.CoachService.Ping:input_type -> coach.PingRequest
-	1, // 1: coach.CoachService.Ping:output_type -> coach.PingResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	0, // 0: coach.AnalyzeActivitiesRequest.activities:type_name -> coach.Activity
+	1, // 1: coach.CoachService.AnalyzeActivities:input_type -> coach.AnalyzeActivitiesRequest
+	2, // 2: coach.CoachService.AnalyzeActivities:output_type -> coach.AnalyzeActivitiesResponse
+	2, // [2:3] is the sub-list for method output_type
+	1, // [1:2] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_proto_coach_proto_init() }
@@ -150,7 +313,7 @@ func file_proto_coach_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_coach_proto_rawDesc), len(file_proto_coach_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

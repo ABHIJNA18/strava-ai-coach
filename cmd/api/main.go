@@ -5,11 +5,10 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/ABHIJNA18/strava-ai-coach/internal/coach"
 	"github.com/ABHIJNA18/strava-ai-coach/internal/database"
 	"github.com/ABHIJNA18/strava-ai-coach/internal/handlers"
 	"github.com/joho/godotenv"
-	"context"
-    coachpb "github.com/ABHIJNA18/strava-ai-coach/proto/generated/coach"
 )
 
 func main() {
@@ -30,20 +29,14 @@ func main() {
 	defer db.Close()
 
 	// Connect to Python Coach Service
-	coachClient, coachConn, err := NewCoachClient()
+	coachClient, coachConn, err := coach.NewClient("localhost:50051")
 	if err != nil {
 		panic(err)
 	}
 	defer coachConn.Close()
-	ctx := context.Background()
 
-	response, err := coachClient.Ping(ctx, &coachpb.PingRequest{})
-
-	if err != nil {
-	panic(err)
-	}
-	fmt.Println(response.Message)
-
+	coachService := coach.NewService(db, coachClient)
+	coachHandler := handlers.NewCoachHandler(coachService)
 
 	//get strava env variables
 	clientID := os.Getenv("STRAVA_CLIENT_ID")
@@ -86,6 +79,10 @@ func main() {
 	http.HandleFunc("/activities/recent/runs", activityHandler.GetRecentRuns)
 	http.HandleFunc("/activities/recent/hikes", activityHandler.GetRecentHikes)
 	http.HandleFunc("/activities/recent/weight-training", activityHandler.GetRecentWeightTraining)
+
+	//==== COACH ENDPOINTS =====
+
+	http.HandleFunc("/coach/report", coachHandler.GetReport)
 
 	//verify server is running
 	fmt.Println("Server running on port 8080...")

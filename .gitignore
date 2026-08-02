@@ -12,5 +12,6 @@ __pycache__/
 # Operating system files (good practice)
 .DS_Store
 Thumbs.db
+/context.md
 
 /api

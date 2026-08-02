@@ -19,14 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	CoachService_Ping_FullMethodName = "/coach.CoachService/Ping"
+	CoachService_AnalyzeActivities_FullMethodName = "/coach.CoachService/AnalyzeActivities"
 )
 
 // CoachServiceClient is the client API for CoachService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CoachServiceClient interface {
-	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error)
+	AnalyzeActivities(ctx context.Context, in *AnalyzeActivitiesRequest, opts ...grpc.CallOption) (*AnalyzeActivitiesResponse, error)
 }
 
 type coachServiceClient struct {
@@ -37,10 +37,10 @@ func NewCoachServiceClient(cc grpc.ClientConnInterface) CoachServiceClient {
 	return &coachServiceClient{cc}
 }
 
-func (c *coachServiceClient) Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error) {
+func (c *coachServiceClient) AnalyzeActivities(ctx context.Context, in *AnalyzeActivitiesRequest, opts ...grpc.CallOption) (*AnalyzeActivitiesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(PingResponse)
-	err := c.cc.Invoke(ctx, CoachService_Ping_FullMethodName, in, out, cOpts...)
+	out := new(AnalyzeActivitiesResponse)
+	err := c.cc.Invoke(ctx, CoachService_AnalyzeActivities_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (c *coachServiceClient) Ping(ctx context.Context, in *PingRequest, opts ...
 // All implementations must embed UnimplementedCoachServiceServer
 // for forward compatibility.
 type CoachServiceServer interface {
-	Ping(context.Context, *PingRequest) (*PingResponse, error)
+	AnalyzeActivities(context.Context, *AnalyzeActivitiesRequest) (*AnalyzeActivitiesResponse, error)
 	mustEmbedUnimplementedCoachServiceServer()
 }
 
@@ -62,8 +62,8 @@ type CoachServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedCoachServiceServer struct{}
 
-func (UnimplementedCoachServiceServer) Ping(context.Context, *PingRequest) (*PingResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method Ping not implemented")
+func (UnimplementedCoachServiceServer) AnalyzeActivities(context.Context, *AnalyzeActivitiesRequest) (*AnalyzeActivitiesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method AnalyzeActivities not implemented")
 }
 func (UnimplementedCoachServiceServer) mustEmbedUnimplementedCoachServiceServer() {}
 func (UnimplementedCoachServiceServer) testEmbeddedByValue()                      {}
@@ -86,20 +86,20 @@ func RegisterCoachServiceServer(s grpc.ServiceRegistrar, srv CoachServiceServer)
 	s.RegisterService(&CoachService_ServiceDesc, srv)
 }
 
-func _CoachService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PingRequest)
+func _CoachService_AnalyzeActivities_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AnalyzeActivitiesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CoachServiceServer).Ping(ctx, in)
+		return srv.(CoachServiceServer).AnalyzeActivities(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: CoachService_Ping_FullMethodName,
+		FullMethod: CoachService_AnalyzeActivities_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CoachServiceServer).Ping(ctx, req.(*PingRequest))
+		return srv.(CoachServiceServer).AnalyzeActivities(ctx, req.(*AnalyzeActivitiesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -112,8 +112,8 @@ var CoachService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*CoachServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Ping",
-			Handler:    _CoachService_Ping_Handler,
+			MethodName: "AnalyzeActivities",
+			Handler:    _CoachService_AnalyzeActivities_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

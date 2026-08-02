@@ -1,4 +1,5 @@
-package main
+// create Client to interact with python servcie
+package coach
 
 import (
 
@@ -10,17 +11,15 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func NewCoachClient() (coachpb.CoachServiceClient, *grpc.ClientConn, error) {
+func NewClient(address string) (coachpb.CoachServiceClient, *grpc.ClientConn, error) {
 
 	conn, err := grpc.NewClient(
-		"localhost:50051",
-		grpc.WithTransportCredentials(
-			insecure.NewCredentials(),
-		),
+		address,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
 		return nil, nil, err
 	}
 	client := coachpb.NewCoachServiceClient(conn)
-	return client, conn, nil
+	return client, conn, err
 }

@@ -5,12 +5,37 @@ package coach;
 option go_package = "github.com/ABHIJNA18/strava-ai-coach/proto/generated/coach";
 
 service CoachService {
-  rpc Ping(PingRequest) returns (PingResponse);
+  rpc AnalyzeActivities(AnalyzeActivitiesRequest)
+      returns (AnalyzeActivitiesResponse);
 }
 
-message PingRequest {
+message Activity {
+  int64 id = 1;
+
+  string name = 2;
+
+  string sport_type = 3;
+
+  float distance = 4;                 // meters
+  int32 moving_time = 5;              // seconds
+  float average_speed = 6;            // meters/second
+
+  float average_heartrate = 7;
+  float max_heartrate = 8;
+
+  float average_cadence = 9;
+
+  int32 total_elevation_gain = 10;    // meters
+
+  string start_date = 11;             // ISO8601
 }
 
-message PingResponse {
-  string message = 1;
+message AnalyzeActivitiesRequest {
+  int64 athlete_id = 1;
+
+  repeated Activity activities = 2;
+}
+
+message AnalyzeActivitiesResponse {
+  string summary = 1;
 }
