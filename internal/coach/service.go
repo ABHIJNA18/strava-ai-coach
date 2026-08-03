@@ -10,6 +10,8 @@ import (
 
 	"github.com/ABHIJNA18/strava-ai-coach/internal/database"
 	coachpb "github.com/ABHIJNA18/strava-ai-coach/proto/generated/coach"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type Service struct {
@@ -50,7 +52,11 @@ func (s *Service) AnalyzeRecentRuns(ctx context.Context, athleteID int64) (strin
 	//make the request
 	response, err := s.client.AnalyzeActivities(ctx, request)
 	if err != nil {
-		fmt.Println("Error getting response from AnalyzeActivities in service.go")
+		if status.Code(err) == codes.Canceled {
+			fmt.Println("AnalyzeActivities request was canceled by the HTTP client")
+			return "", err
+		}
+		fmt.Println("Error getting response from AnalyzeActivities in service.go:", err)
 		return "", err
 	}
 
