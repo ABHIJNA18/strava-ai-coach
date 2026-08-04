@@ -1,5 +1,6 @@
 # This file calculates running metrics from activity data.
 # It does not call OpenAI, gRPC, or the database.
+#Currently this file is not used as code switched to analytics folder, later once everything is working it could be deleted
 
 from dataclasses import dataclass
 

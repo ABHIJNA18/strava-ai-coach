@@ -1,7 +1,8 @@
 # This file builds the prompt used to generate a running coaching summary.
-# It only turns calculated metrics into text instructions.
+# It only turns structured analytics into text instructions.
 
-from python.app.metrics.running import RunningMetrics
+from python.app.analytics.models import RunningAnalytics
+
 
 def _format_pace(seconds_per_km):
     if seconds_per_km <= 0:
@@ -16,64 +17,64 @@ def _format_pace(seconds_per_km):
 
     return f"{minutes}:{seconds:02d} min/km"
 
-def build_running_prompt(metrics: RunningMetrics):
-    total_distance_km = metrics.total_distance_meters / 1000
 
-    prompt=  f"""
+def _format_distance(meters):
+    return f"{meters / 1000:.1f} km"
 
+
+def build_running_prompt(analytics: RunningAnalytics):
+    summary = analytics.summary
+
+    prompt = f"""
 You are an experienced endurance running coach.
 
-Write a personalized coaching summary based ONLY on the running metrics below.
+Write a personalized coaching summary based ONLY on the analytics below.
+Do not recalculate any numbers. Use the analytics as the source of truth.
 
-Recent Running Metrics:
-
-- Runs completed: {metrics.run_count}
-
-- Total distance: {total_distance_km:.1f} km
-
-- Total moving time: {metrics.total_moving_time_seconds} seconds
-
-- Average heart rate: {metrics.average_heartrate:.0f} bpm
-
-- Average pace: {_format_pace(metrics.average_pace_seconds_per_km)}
-
-Your goal is to evaluate how active the runner has been and whether these metrics suggest they are building endurance consistently.
+Running Analytics (Last 30 Days):
+- Runs analyzed: {summary.run_count}
+- Total distance: {_format_distance(summary.total_distance_meters)}
+- Average run distance: {_format_distance(summary.average_run_distance_meters)}
+- Total moving time: {summary.total_moving_time_seconds} seconds
+- Average pace: {_format_pace(summary.average_pace_seconds_per_km)}
+- Average heart rate: {summary.average_heartrate:.0f} bpm
+- Average cadence: {summary.average_cadence:.0f}
+- Total elevation gain: {summary.total_elevation_gain_meters:.0f} meters
+- Fastest run pace: {_format_pace(summary.fastest_run_pace_seconds_per_km)}
+- Longest run: {_format_distance(summary.longest_run_distance_meters)}
 
 Guidelines:
-
-- Keep the response to 3–5 sentences.
-
+- Keep the summary under 150 words.
+- Use 3-5 sentences.
 - Be encouraging but honest.
+- Summarize the athlete's recent training.
+- Comment on overall activity level and running volume.
+- Comment on average pace and heart rate.
+- Comment on cadence if useful.
+- Mention the longest run.
+- Mention the fastest run.
+- Mention elevation gain if relevant.
+- Provide one practical suggestion for the next few weeks.
+- Remember that a lower pace value means faster running.
+- Describe the observed running volume without judging whether it is good or bad unless the supplied analytics explicitly support that conclusion.
 
-- Mention the run count, total distance, average pace, and heart rate whenever available.
+- Avoid statements like the ones below:
+- your volume is low
+- your fitness is declining
+- you are undertraining
 
-- Comment on overall training consistency and activity level.
-
-- Explain what the average pace and heart rate suggest about the effort level.
-
-- If the training appears consistent, explain why it is helping improve endurance.
-
-- If the volume appears low, encourage gradually increasing consistency rather than making large jumps.
-
-- If the pace appears sustainable, mention that maintaining consistent easy running is valuable for long-term improvement.
-
-- Focus on long-term endurance development rather than short-term speed.
-
-- Give one practical suggestion for the next week of training.
-
-- Do not invent any numbers or facts.
-
-- Do not assume races, injuries, or training goals unless they are explicitly provided.
-
+- Instead use neutral language such as:
+- you completed 21 km across 6 runs during the last 30 days.
+- Do not invent numbers or facts.
+- Do not compare weeks.
+- Do not infer training streaks.
+- Do not infer fitness gains or losses.
+- Do not infer consistency scores.
+- Do not mention trends that were not calculated.
+- Do not assume races, injuries, or training goals.
 - Do not give medical advice.
 - Use plain ASCII punctuation only.
-- Use regular hyphens (-), straight apostrophes ('), and straight quotation marks (").
-- Do not use typographic punctuation such as em dashes (—), en dashes (–), or curly quotes.
-- Keep the summary under 120 words.
-- Use 3-4 sentences.
-
-Return only the coaching summary.
-
+- Return only the coaching summary.
 """.strip()
-    #print("Prompt to be sent to openai:", prompt)
+
     return prompt

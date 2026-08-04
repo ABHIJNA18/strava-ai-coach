@@ -7,6 +7,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/ABHIJNA18/strava-ai-coach/internal/database"
 	coachpb "github.com/ABHIJNA18/strava-ai-coach/proto/generated/coach"
@@ -30,15 +31,16 @@ func NewService(db *sql.DB, client coachpb.CoachServiceClient) *Service {
 
 func (s *Service) AnalyzeRecentRuns(ctx context.Context, athleteID int64) (string, error) {
 
-	//get runs
-	runs, err := database.GetRecentActivitiesByType(
+	//get runs from the last 30 days
+	since := time.Now().AddDate(0, 0, -30)
+	runs, err := database.GetActivitiesByTypeSince(
 		s.db,
 		athleteID,
 		"Run",
-		10,
+		since,
 	)
 	if err != nil {
-		fmt.Println("Error getting recent runs in service.go")
+		fmt.Println("Error getting runs from the last 30 days in service.go")
 		return "", err
 	}
 

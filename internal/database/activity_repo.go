@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"time"
 )
 
 func SaveActivities(db *sql.DB, activities []Activity) error {
@@ -417,6 +418,93 @@ func GetRecentActivitiesByType(
 	defer rows.Close()
 
 	//iterate through rows and fill in each activity and append to activities
+
+	var activities []Activity
+
+	for rows.Next() {
+		var activity Activity
+
+		err := rows.Scan(
+			&activity.ID,
+			&activity.StravaActivityID,
+			&activity.AthleteID,
+			&activity.Name,
+			&activity.Type,
+			&activity.SportType,
+			&activity.Distance,
+			&activity.MovingTime,
+			&activity.ElapsedTime,
+			&activity.TotalElevationGain,
+			&activity.AverageSpeed,
+			&activity.MaxSpeed,
+			&activity.AverageHeartrate,
+			&activity.MaxHeartrate,
+			&activity.AverageCadence,
+			&activity.AverageWatts,
+			&activity.MaxWatts,
+			&activity.WeightedAverageWatts,
+			&activity.Kilojoules,
+			&activity.SufferScore,
+			&activity.DeviceName,
+			&activity.StartDate,
+			&activity.StartDateLocal,
+			&activity.CreatedAt,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		activities = append(activities, activity)
+	}
+	return activities, nil
+}
+
+func GetActivitiesByTypeSince(
+	db *sql.DB,
+	athleteID int64,
+	sportType string,
+	since time.Time,
+) ([]Activity, error) {
+
+	query := `
+		SELECT
+			id,
+			strava_activity_id,
+			athlete_id,
+			name,
+			type,
+			sport_type,
+			distance,
+			moving_time,
+			elapsed_time,
+			total_elevation_gain,
+			average_speed,
+			max_speed,
+			average_heartrate,
+			max_heartrate,
+			average_cadence,
+			average_watts,
+			max_watts,
+			weighted_average_watts,
+			kilojoules,
+			suffer_score,
+			device_name,
+			start_date,
+			start_date_local,
+			created_at
+		FROM activities
+		WHERE athlete_id = $1
+		AND sport_type = $2
+		AND start_date >= $3
+		ORDER BY start_date ASC
+		`
+	rows, err := db.Query(query, athleteID, sportType, since)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 
 	var activities []Activity
 
