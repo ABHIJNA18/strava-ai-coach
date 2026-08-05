@@ -2,3 +2,16 @@
 .DS_Store
 .vscode/
 .env/
+
+# Python bytecode & cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Operating system files (good practice)
+.DS_Store
+Thumbs.db
+/context.md
+
+/api
