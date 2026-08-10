@@ -1,0 +1,134 @@
+/* ===========================
+   GLOBAL STYLES
+=========================== */
+
+body {
+
+    margin: 0;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    background: #f5f7fa;
+
+    color: #222;
+
+}
+
+
+/* ===========================
+   MAIN CONTAINER
+=========================== */
+
+.container {
+
+    max-width: 900px;
+
+    margin: 40px auto;
+
+    padding: 20px;
+
+}
+
+
+/* ===========================
+   PAGE HEADER
+=========================== */
+
+header {
+
+    text-align: center;
+
+    margin-bottom: 40px;
+
+}
+
+header h1 {
+
+    font-size: 42px;
+
+    margin-bottom: 10px;
+
+}
+
+header p {
+
+    color: #666;
+
+}
+
+
+
+/* ===========================
+   CARD
+=========================== */
+
+.card {
+
+    background: white;
+
+    padding: 24px;
+
+    margin-bottom: 24px;
+
+    border-radius: 12px;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+
+}
+
+
+/* ===========================
+   BUTTONS
+=========================== */
+
+button {
+
+    background: #fc5200;
+
+    color: white;
+
+    border: none;
+
+    padding: 12px 20px;
+
+    border-radius: 8px;
+
+    font-size: 16px;
+
+    cursor: pointer;
+
+}
+
+button:hover {
+
+    background: #d94800;
+
+}
+
+
+/* ===========================
+   SUMMARY BOX
+=========================== */
+
+#summary-box {
+
+    margin-top: 20px;
+
+    padding: 16px;
+
+    background: #f8f8f8;
+
+    border-radius: 8px;
+
+}
+
+
+/* ===========================
+   ACTIVITIES
+=========================== */
+
+#activities-list {
+
+    margin-top: 20px;
+
+}

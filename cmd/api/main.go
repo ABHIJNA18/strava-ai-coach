@@ -84,9 +84,20 @@ func main() {
 
 	http.HandleFunc("/coach/report", coachHandler.GetReport)
 
+	//==== FRONTEND =====
+
+	fileServer := http.FileServer(
+		http.Dir("./frontend"),
+	)
+
+	http.Handle("/", fileServer)
+
+	//==== START SERVER =====
+
 	//verify server is running
 	fmt.Println("Server running on port 8080...")
 	http.ListenAndServe(":8080", nil)
+
 }
 
 /*test endpoint for tokem refresh logic
