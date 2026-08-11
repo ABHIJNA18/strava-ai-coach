@@ -1,3 +1,4 @@
+
 const summaryButton = document.getElementById('summary-button');
 const summaryBox = document.getElementById('summary-box');
 
