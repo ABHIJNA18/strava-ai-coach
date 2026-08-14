@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Strava AI Coach - Dashboard</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+
+</head>
+
+<body>
+
+    <main class="container">
+
+        <header>
+
+            <h1>🏃 Strava AI Coach</h1>
+
+            <p>
+                Your running activity and AI-powered coaching insights.
+            </p>
+
+        </header>
+
+
+        <!-- AI SUMMARY -->
+
+        <section class="card">
+
+            <h2>AI Coach</h2>
+
+            <p>
+                Get an AI-powered analysis of your running
+                activity over the last 30 days.
+            </p>
+
+            <button id="summary-button">
+                Generate 30-Day Summary ✨
+            </button>
+
+            <div id="summary-box">
+                Your AI summary will appear here.
+            </div>
+
+        </section>
+
+
+        <!-- RECENT ACTIVITIES -->
+
+        <section class="card">
+
+            <h2>Recent Activities</h2>
+
+            <div id="activities-list">
+                <p> 🕝 Loading your recent activities...</p>
+            </div>
+            <div id="activities-footer">
+                <!-- JavaScript will put the activity count here -->
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="js/dashboard.js"></script>
+
+</body>
+
+</html>

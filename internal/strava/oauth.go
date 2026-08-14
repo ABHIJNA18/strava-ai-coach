@@ -91,7 +91,7 @@ func CallbackHandler(clientID string, clientSecret string, db *sql.DB) http.Hand
 			return
 		}
 		fmt.Printf(" %d Activities fetched successfully :", len(activities))
-		fmt.Fprintf(w, " %d Activities fetched successfully :", len(activities))
+		//fmt.Fprintf(w, " %d Activities fetched successfully :", len(activities))
 
 		//creating the variable of type database.Activities to insert into DB
 		var dbActivities []database.Activity
@@ -154,6 +154,8 @@ func CallbackHandler(clientID string, clientSecret string, db *sql.DB) http.Hand
 			"\n %d activities saved successfully\n",
 			len(dbActivities),
 		)
+		// redirecting the users to dashboard page from login page after successfull login
+		http.Redirect(w, r, "/dashboard", http.StatusFound)
 
 	}
 }
