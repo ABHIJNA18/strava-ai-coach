@@ -86,11 +86,16 @@ func main() {
 
 	//==== FRONTEND =====
 
-	fileServer := http.FileServer(
-		http.Dir("./frontend"),
-	)
-
+	fileServer := http.FileServer(http.Dir("./frontend"))
 	http.Handle("/", fileServer)
+
+	//==== FRONTEND DASHBOARD=====
+
+	http.HandleFunc("/dashboard", func(w http.ResponseWriter, r *http.Request) {
+
+		http.ServeFile(w, r, "./frontend/dashboard.html")
+
+	})
 
 	//==== START SERVER =====
 

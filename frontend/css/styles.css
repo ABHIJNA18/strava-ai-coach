@@ -124,11 +124,118 @@ button:hover {
 
 
 /* ===========================
-   ACTIVITIES
+   RECENT ACTIVITIES
 =========================== */
 
 #activities-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+
+.activity-card {
+    background: white;
+
+    padding: 17px;
+
+    border-radius: 10px;
+
+    border: 1px solid #e5e7eb;
+
+    box-shadow: 0 3px 9px rgba(0, 0, 0, 0.06);
+}
+
+
+.activity-card h3 {
+    margin: 0 0 6px 0;
+    font-size: 21px;
+}
+
+
+.activity-date {
+    margin: 0 0 10px 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.activity-type {
+
+    display: inline-block;
+
+    margin-bottom: 14px;
+
+    font-weight: bold;
+
+    color: #fc5200;
+}
+
+
+.activity-metrics {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 16px;
+}
+
+
+.activity-metric {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+}
+
+
+.activity-metric strong {
+
+    font-size: 16px;
+
+    color: #111827;
+}
+
+
+.activity-metric span {
+
+    font-size: 10px;
+
+    color: #6b7280;
+}
+
+
+#activities-footer {
 
     margin-top: 20px;
+
+    padding: 16px;
+
+    text-align: center;
+
+    color: #6b7280;
+
+    background: #f8fafc;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+}
+
+
+/* ===========================
+   MOBILE
+=========================== */
+
+@media (max-width: 700px) {
+
+    .activity-metrics {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
 
 }

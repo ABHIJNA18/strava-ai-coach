@@ -155,7 +155,7 @@ func CallbackHandler(clientID string, clientSecret string, db *sql.DB) http.Hand
 			len(dbActivities),
 		)
 		// redirecting the users to dashboard page from login page after successfull login
-		http.Redirect(w, r, "/dashboard.html", http.StatusFound) 
+		http.Redirect(w, r, "/dashboard", http.StatusFound)
 
 	}
 }
