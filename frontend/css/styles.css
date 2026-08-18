@@ -21,13 +21,20 @@ body {
 
 .container {
 
-    max-width: 900px;
+    width: 80%;
+
+    max-width: 1400px;
 
     margin: 40px auto;
 
     padding: 20px;
 
+    box-sizing: border-box;
+
+
 }
+
+
 
 
 /* ===========================
@@ -59,7 +66,7 @@ header p {
 
 
 /* ===========================
-   CARD
+   CARDS
 =========================== */
 
 .card {
@@ -73,6 +80,53 @@ header p {
     border-radius: 12px;
 
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+
+}
+
+.top-sport-card{
+
+    background: white;
+
+    padding: 24px;
+
+    margin-bottom: 24px;
+
+    border-radius: 12px;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+
+
+}
+
+.ai-coach-card{
+
+    background: white;
+
+    padding: 24px;
+
+    margin-bottom: 24px;
+
+    border-radius: 12px;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+
+}
+
+.ai-summary-top-sport{
+
+    display :flex;
+    gap : 24px;
+}
+
+.ai-coach-card {
+
+    flex: 6.5;
+
+}
+
+.top-sport-card {
+
+    flex: 3.5;
 
 }
 
@@ -120,6 +174,20 @@ button:hover {
 
     border-radius: 8px;
 
+}
+/* ===========================
+   TOP SPORT SECTION
+=========================== */
+
+#top-sport-section{
+
+    margin-top: 20px;
+
+    padding: 16px;
+
+    background: #f8f8f8;
+
+    border-radius: 8px;
 }
 
 
