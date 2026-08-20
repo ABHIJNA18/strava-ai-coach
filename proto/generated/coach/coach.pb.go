@@ -241,6 +241,110 @@ func (x *AnalyzeActivitiesResponse) GetSummary() string {
 	return ""
 }
 
+type GenerateCoachingRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AthleteId     int64                  `protobuf:"varint,1,opt,name=athlete_id,json=athleteId,proto3" json:"athlete_id,omitempty"`
+	Goal          string                 `protobuf:"bytes,2,opt,name=goal,proto3" json:"goal,omitempty"`
+	Activities    []*Activity            `protobuf:"bytes,3,rep,name=activities,proto3" json:"activities,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GenerateCoachingRequest) Reset() {
+	*x = GenerateCoachingRequest{}
+	mi := &file_proto_coach_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GenerateCoachingRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GenerateCoachingRequest) ProtoMessage() {}
+
+func (x *GenerateCoachingRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_coach_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GenerateCoachingRequest.ProtoReflect.Descriptor instead.
+func (*GenerateCoachingRequest) Descriptor() ([]byte, []int) {
+	return file_proto_coach_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GenerateCoachingRequest) GetAthleteId() int64 {
+	if x != nil {
+		return x.AthleteId
+	}
+	return 0
+}
+
+func (x *GenerateCoachingRequest) GetGoal() string {
+	if x != nil {
+		return x.Goal
+	}
+	return ""
+}
+
+func (x *GenerateCoachingRequest) GetActivities() []*Activity {
+	if x != nil {
+		return x.Activities
+	}
+	return nil
+}
+
+type GenerateCoachingResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Coaching      string                 `protobuf:"bytes,1,opt,name=coaching,proto3" json:"coaching,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GenerateCoachingResponse) Reset() {
+	*x = GenerateCoachingResponse{}
+	mi := &file_proto_coach_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GenerateCoachingResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GenerateCoachingResponse) ProtoMessage() {}
+
+func (x *GenerateCoachingResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_coach_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GenerateCoachingResponse.ProtoReflect.Descriptor instead.
+func (*GenerateCoachingResponse) Descriptor() ([]byte, []int) {
+	return file_proto_coach_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *GenerateCoachingResponse) GetCoaching() string {
+	if x != nil {
+		return x.Coaching
+	}
+	return ""
+}
+
 var File_proto_coach_proto protoreflect.FileDescriptor
 
 const file_proto_coach_proto_rawDesc = "" +
@@ -269,9 +373,19 @@ const file_proto_coach_proto_rawDesc = "" +
 	"activities\x18\x02 \x03(\v2\x0f.coach.ActivityR\n" +
 	"activities\"5\n" +
 	"\x19AnalyzeActivitiesResponse\x12\x18\n" +
-	"\asummary\x18\x01 \x01(\tR\asummary2f\n" +
+	"\asummary\x18\x01 \x01(\tR\asummary\"}\n" +
+	"\x17GenerateCoachingRequest\x12\x1d\n" +
+	"\n" +
+	"athlete_id\x18\x01 \x01(\x03R\tathleteId\x12\x12\n" +
+	"\x04goal\x18\x02 \x01(\tR\x04goal\x12/\n" +
+	"\n" +
+	"activities\x18\x03 \x03(\v2\x0f.coach.ActivityR\n" +
+	"activities\"6\n" +
+	"\x18GenerateCoachingResponse\x12\x1a\n" +
+	"\bcoaching\x18\x01 \x01(\tR\bcoaching2\xbb\x01\n" +
 	"\fCoachService\x12V\n" +
-	"\x11AnalyzeActivities\x12\x1f.coach.AnalyzeActivitiesRequest\x1a .coach.AnalyzeActivitiesResponseB<Z:github.com/ABHIJNA18/strava-ai-coach/proto/generated/coachb\x06proto3"
+	"\x11AnalyzeActivities\x12\x1f.coach.AnalyzeActivitiesRequest\x1a .coach.AnalyzeActivitiesResponse\x12S\n" +
+	"\x10GenerateCoaching\x12\x1e.coach.GenerateCoachingRequest\x1a\x1f.coach.GenerateCoachingResponseB<Z:github.com/ABHIJNA18/strava-ai-coach/proto/generated/coachb\x06proto3"
 
 var (
 	file_proto_coach_proto_rawDescOnce sync.Once
@@ -285,21 +399,26 @@ func file_proto_coach_proto_rawDescGZIP() []byte {
 	return file_proto_coach_proto_rawDescData
 }
 
-var file_proto_coach_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_proto_coach_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_proto_coach_proto_goTypes = []any{
 	(*Activity)(nil),                  // 0: coach.Activity
 	(*AnalyzeActivitiesRequest)(nil),  // 1: coach.AnalyzeActivitiesRequest
 	(*AnalyzeActivitiesResponse)(nil), // 2: coach.AnalyzeActivitiesResponse
+	(*GenerateCoachingRequest)(nil),   // 3: coach.GenerateCoachingRequest
+	(*GenerateCoachingResponse)(nil),  // 4: coach.GenerateCoachingResponse
 }
 var file_proto_coach_proto_depIdxs = []int32{
 	0, // 0: coach.AnalyzeActivitiesRequest.activities:type_name -> coach.Activity
-	1, // 1: coach.CoachService.AnalyzeActivities:input_type -> coach.AnalyzeActivitiesRequest
-	2, // 2: coach.CoachService.AnalyzeActivities:output_type -> coach.AnalyzeActivitiesResponse
-	2, // [2:3] is the sub-list for method output_type
-	1, // [1:2] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	0, // 1: coach.GenerateCoachingRequest.activities:type_name -> coach.Activity
+	1, // 2: coach.CoachService.AnalyzeActivities:input_type -> coach.AnalyzeActivitiesRequest
+	3, // 3: coach.CoachService.GenerateCoaching:input_type -> coach.GenerateCoachingRequest
+	2, // 4: coach.CoachService.AnalyzeActivities:output_type -> coach.AnalyzeActivitiesResponse
+	4, // 5: coach.CoachService.GenerateCoaching:output_type -> coach.GenerateCoachingResponse
+	4, // [4:6] is the sub-list for method output_type
+	2, // [2:4] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_proto_coach_proto_init() }
@@ -313,7 +432,7 @@ func file_proto_coach_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_coach_proto_rawDesc), len(file_proto_coach_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -1,0 +1,3 @@
+<!-- This file explains how cadence can be used as supporting running context. -->
+
+Cadence differs between athletes and changes with pace, height, terrain, and fatigue. It should not be forced toward one universal number. Cadence is most useful when compared with the athlete's own running data and perceived comfort. Relaxed form and avoiding overstriding are generally more useful than chasing a specific target.

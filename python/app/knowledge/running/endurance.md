@@ -1,0 +1,3 @@
+<!-- This file explains practical principles for building aerobic running endurance. -->
+
+Aerobic endurance improves through regular running, mostly easy effort, gradual increases in time spent running, and occasional longer runs. Easy running should generally feel conversational. Progress should be gradual because tissues adapt more slowly than motivation. A longer run should support the goal without making recovery difficult.

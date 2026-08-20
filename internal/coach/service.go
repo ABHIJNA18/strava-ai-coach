@@ -66,3 +66,49 @@ func (s *Service) AnalyzeRecentRuns(ctx context.Context, athleteID int64) (strin
 	return response.GetSummary(), nil
 
 }
+
+// GenerateCoaching fetches the athlete's recent runs and requests personalized
+// coaching from the Python Coach Service.
+func (s *Service) GenerateCoaching(ctx context.Context, athleteID int64, goal string) (string, error) {
+	since := time.Now().AddDate(0, 0, -60)
+
+	runs, err := database.GetActivitiesByTypeSince(
+		s.db,
+		athleteID,
+		"Run",
+		since,
+	)
+	if err != nil {
+		fmt.Println(
+			"Error getting runs from the last 60 days:",
+			err,
+		)
+		return "", err
+	}
+
+	if len(runs) == 0 {
+		return "There isn't enough running data from the last 60 days to provide personalized coaching recommendations yet. Keep logging your runs and check back once more activity is available.", nil
+	}
+
+	request := &coachpb.GenerateCoachingRequest{
+		AthleteId: athleteID,
+		Goal:      goal,
+		Activities: mapActivitiesToProto(
+			runs,
+		),
+	}
+
+	response, err := s.client.GenerateCoaching(
+		ctx,
+		request,
+	)
+	if err != nil {
+		fmt.Println(
+			"Error getting response from GenerateCoaching:",
+			err,
+		)
+		return "", err
+	}
+
+	return response.GetCoaching(), nil
+}

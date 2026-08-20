@@ -148,6 +148,103 @@ topSportButton.addEventListener("click", async function(){
     }
 });
 
+// ==========================================
+// PERSONALIZED AI COACHING
+// ==========================================
+
+const coachingGoal = document.getElementById("coaching-goal");
+const coachingButton = document.getElementById("coaching-button");
+const coachingBox = document.getElementById("coaching-box");
+
+coachingButton.addEventListener("click", async function () {
+    const goal = coachingGoal.value.trim();
+
+    if (!goal) {
+        coachingBox.textContent =
+            "Please describe your running goal first.";
+        return;
+    }
+
+    coachingButton.disabled = true;
+    coachingBox.textContent =
+        "🤔Thinking about your goal and recent running data...";
+
+    try {
+        const response = await fetch("/coach/coaching", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                goal: goal
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to generate coaching");
+        }
+
+        const data = await response.json();
+
+        renderCoachingResponse(data.coaching);
+
+    } catch (error) {
+        console.error("Error generating personalized coaching:", error);
+
+        coachingBox.textContent =
+            "Unable to generate personalized coaching. Please try again.";
+
+    } finally {
+        coachingButton.disabled = false;
+    }
+});
+
+function renderCoachingResponse(coaching) {
+    coachingBox.innerHTML = "";
+
+    const sections = [
+        {
+            title: "Observations",
+            values: coaching.observations
+        },
+        {
+            title: "Progress",
+            values: coaching.progress
+        },
+        {
+            title: "Risks",
+            values: coaching.risks
+        },
+        {
+            title: "Recommendations",
+            values: coaching.recommendations
+        }
+    ];
+
+    sections.forEach(function (section) {
+        if (
+            !section.values ||
+            section.values.length === 0
+        ) {
+            return;
+        }
+
+        const heading = document.createElement("h3");
+        heading.textContent = section.title;
+
+        const list = document.createElement("ul");
+
+        section.values.forEach(function (value) {
+            const item = document.createElement("li");
+            item.textContent = value;
+            list.appendChild(item);
+        });
+
+        coachingBox.appendChild(heading);
+        coachingBox.appendChild(list);
+    });
+}
+
 
 // ==========================================
 // RECENT ACTIVITIES

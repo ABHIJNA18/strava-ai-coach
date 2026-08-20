@@ -89,6 +89,7 @@ func main() {
 	//==== COACH ENDPOINTS =====
 
 	http.HandleFunc("/coach/report", coachHandler.GetReport)
+	http.HandleFunc("/coach/coaching", coachHandler.GetCoaching)
 
 	//==== FRONTEND =====
 
