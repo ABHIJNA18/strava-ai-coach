@@ -13,7 +13,7 @@ def generate_summary(prompt: str):
     if not api_key:
         raise ValueError("OPENAI_API_KEY is not set")
 
-    model = os.getenv("OPENAI_MODEL", "gpt-5.5-mini")
+    model = os.getenv("OPENAI_MODEL", "gpt-5.4-mini")
     client = OpenAI(api_key=api_key)
 
     response = client.responses.create(
@@ -47,7 +47,7 @@ def generate_structured_summary(prompt: str) -> dict:
 
     model = os.getenv(
         "OPENAI_MODEL",
-        "gpt-5.5-mini",
+        "gpt-5.4-mini",
     )
 
     client = OpenAI(

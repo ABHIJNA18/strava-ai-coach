@@ -137,7 +137,7 @@ topSportButton.addEventListener("click", async function(){
             `Your top sport${sports.length > 1 ? "s" : ""} ` +
             `in the last 30 days ${sports.length > 1 ? "are..." : "is..."} ` +
             `<br><strong>${sportText}</strong></br>` +
-            `You logged <strong>${activityCount} activities`+
+            `You logged <strong>${activityCount} activities `+
             `${sports.length >1 ? "each." : "."}` ;
 
     } catch(error){

@@ -209,14 +209,38 @@ textarea::placeholder {
 }
 
 #coaching-box {
+    display: block !important;
+
+    width: 820px !important;
+    max-width: 100% !important;
+
+    height: auto !important;
+    min-height: 0 !important;
+
     margin-top: 16px;
-    padding: 16px;
-    border-radius: 10px;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+
+    padding: 16px !important;
+
+    box-sizing: border-box;
     background: #f6f6f6;
-    line-height: 1.6;
-    white-space: pre-wrap;
+    border-radius: 8px;
+
+    text-align: left !important;
+    line-height: 1.5;
+    white-space: normal;
 }
 
+#coaching-box h3 {
+    margin-top: 0;
+    text-align: left;
+}
+
+#coaching-box ul {
+    padding-left: 20px;
+    text-align: left;
+}
 
 /* ===========================
    RECENT ACTIVITIES
