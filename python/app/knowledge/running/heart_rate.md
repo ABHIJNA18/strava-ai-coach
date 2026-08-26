@@ -1,0 +1,3 @@
+<!-- This file explains how heart rate can provide context for running effort. -->
+
+Heart rate is useful when compared with pace and perceived effort. It varies with heat, hills, sleep, stress, hydration, and sensor quality. There is no single universally correct heart-rate target. A relatively high heart rate at an easy pace may suggest that the effort is not truly easy, but it should be interpreted cautiously.

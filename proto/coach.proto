@@ -7,6 +7,9 @@ option go_package = "github.com/ABHIJNA18/strava-ai-coach/proto/generated/coach"
 service CoachService {
   rpc AnalyzeActivities(AnalyzeActivitiesRequest)
       returns (AnalyzeActivitiesResponse);
+
+  rpc GenerateCoaching(GenerateCoachingRequest)
+      returns (GenerateCoachingResponse);
 }
 
 message Activity {
@@ -38,4 +41,14 @@ message AnalyzeActivitiesRequest {
 
 message AnalyzeActivitiesResponse {
   string summary = 1;
+}
+
+message GenerateCoachingRequest {
+  int64 athlete_id = 1;
+  string goal = 2;
+  repeated Activity activities = 3;
+}
+
+message GenerateCoachingResponse {
+  string coaching = 1;
 }

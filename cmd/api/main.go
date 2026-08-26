@@ -57,6 +57,9 @@ func main() {
 	activityHandler := handlers.NewActivityHandler(db)
 	authHandler := handlers.NewAuthHandler(db, clientID, clientSecret)
 
+	//stats handler
+	statsHandler := handlers.NewStatsHandler(db)
+
 	//Health check endpoint
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Strava AI Coach running")
@@ -68,9 +71,12 @@ func main() {
 	//callback endpoint
 	http.HandleFunc("/oauth/callback", authHandler.Callback)
 
-	//==== ACTIVITY ENDPOINTS =====
+	//==== STATS ENDPOINTS =====
 
 	http.HandleFunc("/stats", activityHandler.GetStats)
+	http.HandleFunc("/stats/top-sport", statsHandler.GetTopSport)
+
+	//==== ACTIVITY ENDPOINTS =====
 	http.HandleFunc("/activities", activityHandler.GetActivities)
 	http.HandleFunc("/activities/runs", activityHandler.GetRuns)
 	http.HandleFunc("/activities/hikes", activityHandler.GetHikes)
@@ -83,6 +89,7 @@ func main() {
 	//==== COACH ENDPOINTS =====
 
 	http.HandleFunc("/coach/report", coachHandler.GetReport)
+	http.HandleFunc("/coach/coaching", coachHandler.GetCoaching)
 
 	//==== FRONTEND =====
 

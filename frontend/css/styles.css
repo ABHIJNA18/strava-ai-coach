@@ -21,13 +21,20 @@ body {
 
 .container {
 
-    max-width: 900px;
+    width: 80%;
+
+    max-width: 1400px;
 
     margin: 40px auto;
 
     padding: 20px;
 
+    box-sizing: border-box;
+
+
 }
+
+
 
 
 /* ===========================
@@ -59,7 +66,7 @@ header p {
 
 
 /* ===========================
-   CARD
+   CARDS
 =========================== */
 
 .card {
@@ -73,6 +80,53 @@ header p {
     border-radius: 12px;
 
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+
+}
+
+.top-sport-card{
+
+    background: white;
+
+    padding: 24px;
+
+    margin-bottom: 24px;
+
+    border-radius: 12px;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+
+
+}
+
+.ai-coach-card{
+
+    background: white;
+
+    padding: 24px;
+
+    margin-bottom: 24px;
+
+    border-radius: 12px;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+
+}
+
+.ai-summary-top-sport{
+
+    display :flex;
+    gap : 24px;
+}
+
+.ai-coach-card {
+
+    flex: 6.5;
+
+}
+
+.top-sport-card {
+
+    flex: 3.5;
 
 }
 
@@ -121,7 +175,72 @@ button:hover {
     border-radius: 8px;
 
 }
+/* ===========================
+   TOP SPORT SECTION
+=========================== */
 
+#top-sport-section{
+
+    margin-top: 20px;
+
+    padding: 16px;
+
+    background: #f8f8f8;
+
+    border-radius: 8px;
+}
+/* ===========================
+   PERSONALIZED COACHING SECTION
+=========================== */
+
+textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px;
+    margin: 12px 0;
+    border: 1px solid #d5d5d5;
+    border-radius: 10px;
+    font: inherit;
+    resize: vertical;
+}
+
+textarea::placeholder {
+    color: #888;
+}
+
+#coaching-box {
+    display: block !important;
+
+    width: 820px !important;
+    max-width: 100% !important;
+
+    height: auto !important;
+    min-height: 0 !important;
+
+    margin-top: 16px;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+
+    padding: 16px !important;
+
+    box-sizing: border-box;
+    background: #f6f6f6;
+    border-radius: 8px;
+
+    text-align: left !important;
+    line-height: 1.5;
+    white-space: normal;
+}
+
+#coaching-box h3 {
+    margin-top: 0;
+    text-align: left;
+}
+
+#coaching-box ul {
+    padding-left: 20px;
+    text-align: left;
+}
 
 /* ===========================
    RECENT ACTIVITIES

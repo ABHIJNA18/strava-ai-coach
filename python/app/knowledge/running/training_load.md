@@ -1,0 +1,3 @@
+<!-- This file explains how training volume and load should progress gradually. -->
+
+Training load reflects the amount and intensity of recent work. A sudden increase in distance or hard sessions can reduce recovery. Progress should usually come from small increases in running time or distance while preserving easier days. The best adjustment depends on the athlete's current activity and stated goal.

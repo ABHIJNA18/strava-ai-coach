@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-from . import coach_pb2 as coach__pb2 
+from . import coach_pb2 as coach__pb2
 
 GRPC_GENERATED_VERSION = '1.83.0'
 GRPC_VERSION = grpc.__version__
@@ -39,12 +39,23 @@ class CoachServiceStub:
                 request_serializer=coach__pb2.AnalyzeActivitiesRequest.SerializeToString,
                 response_deserializer=coach__pb2.AnalyzeActivitiesResponse.FromString,
                 _registered_method=True)
+        self.GenerateCoaching = channel.unary_unary(
+                '/coach.CoachService/GenerateCoaching',
+                request_serializer=coach__pb2.GenerateCoachingRequest.SerializeToString,
+                response_deserializer=coach__pb2.GenerateCoachingResponse.FromString,
+                _registered_method=True)
 
 
 class CoachServiceServicer:
     """Missing associated documentation comment in .proto file."""
 
     def AnalyzeActivities(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GenerateCoaching(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -57,6 +68,11 @@ def add_CoachServiceServicer_to_server(servicer, server):
                     servicer.AnalyzeActivities,
                     request_deserializer=coach__pb2.AnalyzeActivitiesRequest.FromString,
                     response_serializer=coach__pb2.AnalyzeActivitiesResponse.SerializeToString,
+            ),
+            'GenerateCoaching': grpc.unary_unary_rpc_method_handler(
+                    servicer.GenerateCoaching,
+                    request_deserializer=coach__pb2.GenerateCoachingRequest.FromString,
+                    response_serializer=coach__pb2.GenerateCoachingResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -86,6 +102,33 @@ class CoachService:
             '/coach.CoachService/AnalyzeActivities',
             coach__pb2.AnalyzeActivitiesRequest.SerializeToString,
             coach__pb2.AnalyzeActivitiesResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GenerateCoaching(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/coach.CoachService/GenerateCoaching',
+            coach__pb2.GenerateCoachingRequest.SerializeToString,
+            coach__pb2.GenerateCoachingResponse.FromString,
             options,
             channel_credentials,
             insecure,

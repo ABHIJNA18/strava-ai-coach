@@ -1,4 +1,57 @@
 // ==========================================
+// ACTIVITY EMOJIS
+// ==========================================
+
+const activityEmojis = {
+
+    Run: "🏃",
+    Swim: "🏊",
+    WeightTraining: "🏋️",
+    Ride: "🚴",
+    Hike: "🥾",
+    Walk: "🚶",
+    Yoga: "🧘",
+
+    default: "🏅"
+};
+
+
+// ==========================================
+// METRIC EMOJIS
+// ==========================================
+
+const metricEmojis = {
+
+    duration: "⏱️",
+    distance: "〽️",
+    pace: "🏃",
+    speed: "📈",
+    elevation: "⛰️",
+    heartRate: "❤️",
+    power: "⚡"
+};
+
+// ==========================================
+// SPORT NAMES
+// ==========================================
+
+const sportNames = {
+
+    Run: "Running",
+
+    Hike: "Hiking",
+
+    Walk: "Walking",
+
+    WeightTraining: "Weight Training",
+
+    Swim: "Swimming",
+
+    Ride: "Cycling"
+
+};
+
+// ==========================================
 // AI SUMMARY
 // ==========================================
 
@@ -7,7 +60,7 @@ const summaryBox = document.getElementById("summary-box");
 
 summaryButton.addEventListener("click", async function () {
 
-    summaryBox.textContent = "Generating your 30-day summary...";
+    summaryBox.textContent = "💭 Generating your 30-day summary...";
 
     try {
 
@@ -29,6 +82,168 @@ summaryButton.addEventListener("click", async function () {
             "Unable to generate the summary. Please try again.";
     }
 });
+
+
+// ==========================================
+// TOP SPORT 
+// ==========================================
+
+const topSportButton = document.getElementById("top-sport-button");
+const topSportBox = document.getElementById("top-sport-section");
+
+
+topSportButton.addEventListener("click", async function(){
+
+    topSportBox.textContent = "💭 Checking your top sport in the last 30 days...";
+
+    try{
+
+        const response = await fetch("/stats/top-sport");
+        if (! response.ok){
+            throw new Error("Failed to fetch top sport");
+
+        }
+
+        const data = await response.json();
+
+        //fetch the list of top sport/ top sports
+
+        const sports = data.sports;
+
+        if (sports.length === 0) {
+
+            topSportBox.textContent =
+                "No activities found in the last 30 days.";
+
+            return;
+        }
+
+        const formattedSports = sports.map(function (sport) {
+
+            const sportEmoji =
+                activityEmojis[sport.sport] || "🏅";
+
+            const sportName =
+                sportNames[sport.sport] || sport.sport;
+
+            return `${sportName} ${sportEmoji}`;
+        });
+
+        const sportText = formattedSports.join(" and ");
+
+        const activityCount = sports[0].count;
+
+        topSportBox.innerHTML =
+            `Your top sport${sports.length > 1 ? "s" : ""} ` +
+            `in the last 30 days ${sports.length > 1 ? "are..." : "is..."} ` +
+            `<br><strong>${sportText}</strong></br>` +
+            `You logged <strong>${activityCount} activities `+
+            `${sports.length >1 ? "each." : "."}` ;
+
+    } catch(error){
+
+        console.error("Error fetching top sport", error)
+        topSportBox.textContent = "Error fetching top sport. Please try again"
+
+    }
+});
+
+// ==========================================
+// PERSONALIZED AI COACHING
+// ==========================================
+
+const coachingGoal = document.getElementById("coaching-goal");
+const coachingButton = document.getElementById("coaching-button");
+const coachingBox = document.getElementById("coaching-box");
+
+coachingButton.addEventListener("click", async function () {
+    const goal = coachingGoal.value.trim();
+
+    if (!goal) {
+        coachingBox.textContent =
+            "Please describe your running goal first.";
+        return;
+    }
+
+    coachingButton.disabled = true;
+    coachingBox.textContent =
+        "🤔Thinking about your goal and recent running data...";
+
+    try {
+        const response = await fetch("/coach/coaching", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                goal: goal
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to generate coaching");
+        }
+
+        const data = await response.json();
+
+        renderCoachingResponse(data.coaching);
+
+    } catch (error) {
+        console.error("Error generating personalized coaching:", error);
+
+        coachingBox.textContent =
+            "Unable to generate personalized coaching. Please try again.";
+
+    } finally {
+        coachingButton.disabled = false;
+    }
+});
+
+function renderCoachingResponse(coaching) {
+    coachingBox.innerHTML = "";
+
+    const sections = [
+        {
+            title: "Observations",
+            values: coaching.observations
+        },
+        {
+            title: "Progress",
+            values: coaching.progress
+        },
+        {
+            title: "Risks",
+            values: coaching.risks
+        },
+        {
+            title: "Recommendations",
+            values: coaching.recommendations
+        }
+    ];
+
+    sections.forEach(function (section) {
+        if (
+            !section.values ||
+            section.values.length === 0
+        ) {
+            return;
+        }
+
+        const heading = document.createElement("h3");
+        heading.textContent = section.title;
+
+        const list = document.createElement("ul");
+
+        section.values.forEach(function (value) {
+            const item = document.createElement("li");
+            item.textContent = value;
+            list.appendChild(item);
+        });
+
+        coachingBox.appendChild(heading);
+        coachingBox.appendChild(list);
+    });
+}
 
 
 // ==========================================
@@ -97,39 +312,6 @@ const activityConfig = {
     ]
 };
 
-
-// ==========================================
-// ACTIVITY EMOJIS
-// ==========================================
-
-const activityEmojis = {
-
-    Run: "🏃",
-    Swim: "🏊",
-    WeightTraining: "🏋️",
-    Ride: "🚴",
-    Hike: "🥾",
-    Walk: "🚶",
-    Yoga: "🧘",
-
-    default: "🏅"
-};
-
-
-// ==========================================
-// METRIC EMOJIS
-// ==========================================
-
-const metricEmojis = {
-
-    duration: "⏱️",
-    distance: "〽️",
-    pace: "🏃",
-    speed: "📈",
-    elevation: "⛰️",
-    heartRate: "❤️",
-    power: "⚡"
-};
 
 
 // ==========================================

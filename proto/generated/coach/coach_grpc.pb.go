@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	CoachService_AnalyzeActivities_FullMethodName = "/coach.CoachService/AnalyzeActivities"
+	CoachService_GenerateCoaching_FullMethodName  = "/coach.CoachService/GenerateCoaching"
 )
 
 // CoachServiceClient is the client API for CoachService service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CoachServiceClient interface {
 	AnalyzeActivities(ctx context.Context, in *AnalyzeActivitiesRequest, opts ...grpc.CallOption) (*AnalyzeActivitiesResponse, error)
+	GenerateCoaching(ctx context.Context, in *GenerateCoachingRequest, opts ...grpc.CallOption) (*GenerateCoachingResponse, error)
 }
 
 type coachServiceClient struct {
@@ -47,11 +49,22 @@ func (c *coachServiceClient) AnalyzeActivities(ctx context.Context, in *AnalyzeA
 	return out, nil
 }
 
+func (c *coachServiceClient) GenerateCoaching(ctx context.Context, in *GenerateCoachingRequest, opts ...grpc.CallOption) (*GenerateCoachingResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GenerateCoachingResponse)
+	err := c.cc.Invoke(ctx, CoachService_GenerateCoaching_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CoachServiceServer is the server API for CoachService service.
 // All implementations must embed UnimplementedCoachServiceServer
 // for forward compatibility.
 type CoachServiceServer interface {
 	AnalyzeActivities(context.Context, *AnalyzeActivitiesRequest) (*AnalyzeActivitiesResponse, error)
+	GenerateCoaching(context.Context, *GenerateCoachingRequest) (*GenerateCoachingResponse, error)
 	mustEmbedUnimplementedCoachServiceServer()
 }
 
@@ -64,6 +77,9 @@ type UnimplementedCoachServiceServer struct{}
 
 func (UnimplementedCoachServiceServer) AnalyzeActivities(context.Context, *AnalyzeActivitiesRequest) (*AnalyzeActivitiesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method AnalyzeActivities not implemented")
+}
+func (UnimplementedCoachServiceServer) GenerateCoaching(context.Context, *GenerateCoachingRequest) (*GenerateCoachingResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GenerateCoaching not implemented")
 }
 func (UnimplementedCoachServiceServer) mustEmbedUnimplementedCoachServiceServer() {}
 func (UnimplementedCoachServiceServer) testEmbeddedByValue()                      {}
@@ -104,6 +120,24 @@ func _CoachService_AnalyzeActivities_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CoachService_GenerateCoaching_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GenerateCoachingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CoachServiceServer).GenerateCoaching(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CoachService_GenerateCoaching_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CoachServiceServer).GenerateCoaching(ctx, req.(*GenerateCoachingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CoachService_ServiceDesc is the grpc.ServiceDesc for CoachService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -114,6 +148,10 @@ var CoachService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AnalyzeActivities",
 			Handler:    _CoachService_AnalyzeActivities_Handler,
+		},
+		{
+			MethodName: "GenerateCoaching",
+			Handler:    _CoachService_GenerateCoaching_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

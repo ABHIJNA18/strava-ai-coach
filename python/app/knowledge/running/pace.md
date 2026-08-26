@@ -1,0 +1,3 @@
+<!-- This file explains how runners can develop pace while protecting recovery. -->
+
+Pace should be interpreted together with distance, terrain, heart rate, and effort. Faster running can be introduced through short controlled intervals, steady running, or gentle tempo work. Most training should remain easier than the hardest workout. A sustainable target pace should be developed gradually rather than forced every session.

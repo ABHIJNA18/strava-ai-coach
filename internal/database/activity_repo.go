@@ -633,3 +633,64 @@ func GetRecentActivities(
 	}
 	return activities, nil
 }
+
+func GetTopSportSince(db *sql.DB, athleteID int64, since time.Time) ([]TopSport, error) {
+
+	query := `
+		WITH sport_counts AS (
+			SELECT
+				sport_type,
+				COUNT(*)::int AS activity_count
+			FROM activities
+			WHERE athlete_id = $1
+			AND start_date>= $2
+			GROUP BY sport_type
+		)
+		SELECT
+			sport_type,
+			activity_count
+		FROM sport_counts
+		WHERE activity_count = (
+			SELECT MAX(activity_count)
+			FROM sport_counts
+		)ORDER BY sport_type
+
+	`
+
+	rows, err := db.Query(
+		query,
+		athleteID,
+		since,
+	)
+
+	if err != nil {
+
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var topSports []TopSport
+
+	for rows.Next() {
+		var sport TopSport
+
+		err := rows.Scan(
+			&sport.Sport,
+			&sport.Count,
+		)
+
+		if err != nil {
+
+			return nil, err
+		}
+
+		topSports = append(topSports, sport)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return topSports, nil
+}

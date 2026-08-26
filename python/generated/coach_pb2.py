@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0b\x63oach.proto\x12\x05\x63oach\"\xf3\x01\n\x08\x41\x63tivity\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x12\n\nsport_type\x18\x03 \x01(\t\x12\x10\n\x08\x64istance\x18\x04 \x01(\x02\x12\x13\n\x0bmoving_time\x18\x05 \x01(\x05\x12\x15\n\raverage_speed\x18\x06 \x01(\x02\x12\x19\n\x11\x61verage_heartrate\x18\x07 \x01(\x02\x12\x15\n\rmax_heartrate\x18\x08 \x01(\x02\x12\x17\n\x0f\x61verage_cadence\x18\t \x01(\x02\x12\x1c\n\x14total_elevation_gain\x18\n \x01(\x05\x12\x12\n\nstart_date\x18\x0b \x01(\t\"S\n\x18\x41nalyzeActivitiesRequest\x12\x12\n\nathlete_id\x18\x01 \x01(\x03\x12#\n\nactivities\x18\x02 \x03(\x0b\x32\x0f.coach.Activity\",\n\x19\x41nalyzeActivitiesResponse\x12\x0f\n\x07summary\x18\x01 \x01(\t2f\n\x0c\x43oachService\x12V\n\x11\x41nalyzeActivities\x12\x1f.coach.AnalyzeActivitiesRequest\x1a .coach.AnalyzeActivitiesResponseB<Z:github.com/ABHIJNA18/strava-ai-coach/proto/generated/coachb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0b\x63oach.proto\x12\x05\x63oach\"\xf3\x01\n\x08\x41\x63tivity\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x12\n\nsport_type\x18\x03 \x01(\t\x12\x10\n\x08\x64istance\x18\x04 \x01(\x02\x12\x13\n\x0bmoving_time\x18\x05 \x01(\x05\x12\x15\n\raverage_speed\x18\x06 \x01(\x02\x12\x19\n\x11\x61verage_heartrate\x18\x07 \x01(\x02\x12\x15\n\rmax_heartrate\x18\x08 \x01(\x02\x12\x17\n\x0f\x61verage_cadence\x18\t \x01(\x02\x12\x1c\n\x14total_elevation_gain\x18\n \x01(\x05\x12\x12\n\nstart_date\x18\x0b \x01(\t\"S\n\x18\x41nalyzeActivitiesRequest\x12\x12\n\nathlete_id\x18\x01 \x01(\x03\x12#\n\nactivities\x18\x02 \x03(\x0b\x32\x0f.coach.Activity\",\n\x19\x41nalyzeActivitiesResponse\x12\x0f\n\x07summary\x18\x01 \x01(\t\"`\n\x17GenerateCoachingRequest\x12\x12\n\nathlete_id\x18\x01 \x01(\x03\x12\x0c\n\x04goal\x18\x02 \x01(\t\x12#\n\nactivities\x18\x03 \x03(\x0b\x32\x0f.coach.Activity\",\n\x18GenerateCoachingResponse\x12\x10\n\x08\x63oaching\x18\x01 \x01(\t2\xbb\x01\n\x0c\x43oachService\x12V\n\x11\x41nalyzeActivities\x12\x1f.coach.AnalyzeActivitiesRequest\x1a .coach.AnalyzeActivitiesResponse\x12S\n\x10GenerateCoaching\x12\x1e.coach.GenerateCoachingRequest\x1a\x1f.coach.GenerateCoachingResponseB<Z:github.com/ABHIJNA18/strava-ai-coach/proto/generated/coachb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -38,6 +38,10 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_ANALYZEACTIVITIESREQUEST']._serialized_end=351
   _globals['_ANALYZEACTIVITIESRESPONSE']._serialized_start=353
   _globals['_ANALYZEACTIVITIESRESPONSE']._serialized_end=397
-  _globals['_COACHSERVICE']._serialized_start=399
-  _globals['_COACHSERVICE']._serialized_end=501
+  _globals['_GENERATECOACHINGREQUEST']._serialized_start=399
+  _globals['_GENERATECOACHINGREQUEST']._serialized_end=495
+  _globals['_GENERATECOACHINGRESPONSE']._serialized_start=497
+  _globals['_GENERATECOACHINGRESPONSE']._serialized_end=541
+  _globals['_COACHSERVICE']._serialized_start=544
+  _globals['_COACHSERVICE']._serialized_end=731
 # @@protoc_insertion_point(module_scope)
