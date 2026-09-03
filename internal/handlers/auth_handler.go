@@ -17,15 +17,17 @@ type AuthHandlers struct {
 	ClientID     string
 	ClientSecret string
 	Sessions     *auth.SessionManager
+	SyncService  *strava.SyncService
 }
 
 // func to return handler
-func NewAuthHandler(db *sql.DB, clientID string, clientSecret string, sessions *auth.SessionManager) *AuthHandlers {
+func NewAuthHandler(db *sql.DB, clientID string, clientSecret string, sessions *auth.SessionManager, syncService *strava.SyncService) *AuthHandlers {
 	return &AuthHandlers{
 		DB:           db,
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
 		Sessions:     sessions,
+		SyncService:  syncService,
 	}
 }
 
@@ -46,8 +48,10 @@ func (h *AuthHandlers) Callback(w http.ResponseWriter, r *http.Request) {
 		h.ClientSecret,
 		h.DB,
 		h.Sessions,
+		h.SyncService,
 	)(w, r)
 }
+
 // Logout revokes only the current browser session, clears its cookie,
 // and redirects the user to the public landing page.
 

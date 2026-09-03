@@ -5,11 +5,12 @@ import "time"
 //tags are needed as APIs usually return: api formats like "total_distance" instead of TotalDistance
 
 type Athlete struct {
-	ID              int64
-	StravaAthleteID int64
-	Firstname       string
-	Lastname        string
-	CreatedAt       time.Time
+	ID                     int64
+	StravaAthleteID        int64
+	Firstname              string
+	Lastname               string
+	CreatedAt              time.Time
+	InitialSyncCompletedAt *time.Time
 }
 
 type OAuthToken struct {

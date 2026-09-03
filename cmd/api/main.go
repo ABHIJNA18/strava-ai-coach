@@ -12,6 +12,7 @@ import (
 	"github.com/ABHIJNA18/strava-ai-coach/internal/database"
 	"github.com/ABHIJNA18/strava-ai-coach/internal/handlers"
 	"github.com/ABHIJNA18/strava-ai-coach/internal/middleware"
+	"github.com/ABHIJNA18/strava-ai-coach/internal/strava"
 	"github.com/joho/godotenv"
 )
 
@@ -98,11 +99,12 @@ func main() {
 	} else {
 		fmt.Println("Strava configuration loaded")
 	}
-
+	// ============Sync Service====================
+	syncService := strava.NewSyncService(db, clientID, clientSecret)
 	//=============auth and activity handlers=========================
 
 	activityHandler := handlers.NewActivityHandler(db)
-	authHandler := handlers.NewAuthHandler(db, clientID, clientSecret, sessionManager)
+	authHandler := handlers.NewAuthHandler(db, clientID, clientSecret, sessionManager, syncService)
 
 	//stats handler
 	statsHandler := handlers.NewStatsHandler(db)
