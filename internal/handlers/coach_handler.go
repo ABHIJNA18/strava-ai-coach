@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/ABHIJNA18/strava-ai-coach/internal/middleware"
 )
 
 type CoachService interface {
@@ -40,12 +42,27 @@ type coachingResponse struct {
 }
 
 func (h *CoachHandler) GetReport(w http.ResponseWriter, r *http.Request) {
+
+	//get athleteID from the context, set by middleware
+
+	athleteID, ok := middleware.AthleteIDFromContext(
+		r.Context(),
+	)
+	if !ok {
+		http.Error(
+			w,
+			"unauthorized",
+			http.StatusUnauthorized,
+		)
+		return
+	}
+
 	if r.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 	fmt.Println("coach report request started:", r.Method, r.URL.Path, time.Now().UnixNano())
-	summary, err := h.coachService.AnalyzeRecentRuns(r.Context(), 1)
+	summary, err := h.coachService.AnalyzeRecentRuns(r.Context(), athleteID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -60,6 +77,20 @@ func (h *CoachHandler) GetReport(w http.ResponseWriter, r *http.Request) {
 
 // GetCoaching receives a goal and returns structured personalized coaching.
 func (h *CoachHandler) GetCoaching(w http.ResponseWriter, r *http.Request) {
+
+	//get athleteID from the context, set by middleware
+
+	athleteID, ok := middleware.AthleteIDFromContext(
+		r.Context(),
+	)
+	if !ok {
+		http.Error(
+			w,
+			"unauthorized",
+			http.StatusUnauthorized,
+		)
+		return
+	}
 
 	if r.Method != http.MethodPost {
 		http.Error(
@@ -96,7 +127,7 @@ func (h *CoachHandler) GetCoaching(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	coaching, err := h.coachService.GenerateCoaching(r.Context(), 1, request.Goal)
+	coaching, err := h.coachService.GenerateCoaching(r.Context(), athleteID, request.Goal)
 
 	if err != nil {
 		http.Error(

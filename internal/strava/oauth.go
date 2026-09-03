@@ -1,3 +1,5 @@
+//the callback must create an application authentication cookie after the athlete and Strava tokens are saved.
+
 package strava
 
 import (
@@ -6,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ABHIJNA18/strava-ai-coach/internal/auth"
 	"github.com/ABHIJNA18/strava-ai-coach/internal/database"
 )
 
@@ -16,7 +19,7 @@ func LoginHandler(clientID string) http.HandlerFunc {
 		http.Redirect(w, r, authURL, http.StatusFound)
 	}
 }
-func CallbackHandler(clientID string, clientSecret string, db *sql.DB) http.HandlerFunc {
+func CallbackHandler(clientID string, clientSecret string, db *sql.DB, sessions *auth.SessionManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		//Oauth error handling
@@ -84,6 +87,26 @@ func CallbackHandler(clientID string, clientSecret string, db *sql.DB) http.Hand
 
 		fmt.Println("Tokens saved to DB sucessfully")
 
+		//the callback must create an application authentication cookie after the athlete and Strava tokens are saved.
+
+		sessionToken, err := sessions.CreateSession(
+			athleteID,
+		)
+		if err != nil {
+			http.Error(
+				w,
+				"Failed to create application session",
+				http.StatusInternalServerError,
+			)
+			return
+		}
+
+		sessions.SetCookie(
+			w,
+			sessionToken,
+		)
+
+		//----to be removed later----
 		//get all the activities using access token
 		activities, err := GetAllActivities(tokenResponse.AccessToken)
 		if err != nil {

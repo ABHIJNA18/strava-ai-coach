@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/ABHIJNA18/strava-ai-coach/internal/database"
+	"github.com/ABHIJNA18/strava-ai-coach/internal/middleware"
 )
 
 // define the struct
@@ -24,7 +25,19 @@ func NewActivityHandler(db *sql.DB) *ActivityHandler {
 
 func (h *ActivityHandler) GetActivities(w http.ResponseWriter, r *http.Request) {
 
-	activities, err := database.GetActivitiesByAthleteID(h.DB, 1)
+	//retireve the athleteID from the context, which was set by the middleware
+	athleteID, ok := middleware.AthleteIDFromContext(r.Context())
+
+	if !ok {
+		http.Error(
+			w,
+			"unauhthorized",
+			http.StatusUnauthorized,
+		)
+		return
+	}
+
+	activities, err := database.GetActivitiesByAthleteID(h.DB, athleteID)
 	if err != nil {
 
 		http.Error(
@@ -55,7 +68,19 @@ func (h *ActivityHandler) GetStats(
 
 ) {
 
-	stats, err := database.GetActivityStats(h.DB, 1)
+	//retireve the athleteID from the context, which was set by the middleware
+	athleteID, ok := middleware.AthleteIDFromContext(r.Context())
+
+	if !ok {
+		http.Error(
+			w,
+			"unauhthorized",
+			http.StatusUnauthorized,
+		)
+		return
+	}
+
+	stats, err := database.GetActivityStats(h.DB, athleteID)
 
 	if err != nil {
 		http.Error(
@@ -80,7 +105,19 @@ func (h *ActivityHandler) GetStats(
 
 func (h *ActivityHandler) GetRuns(w http.ResponseWriter, r *http.Request) {
 
-	runs, err := database.GetActivitiesByType(h.DB, 1, "Run")
+	//retireve the athleteID from the context, which was set by the middleware
+	athleteID, ok := middleware.AthleteIDFromContext(r.Context())
+
+	if !ok {
+		http.Error(
+			w,
+			"unauhthorized",
+			http.StatusUnauthorized,
+		)
+		return
+	}
+
+	runs, err := database.GetActivitiesByType(h.DB, athleteID, "Run")
 	if err != nil {
 		http.Error(
 			w,
@@ -107,9 +144,21 @@ func (h *ActivityHandler) GetHikes(
 	r *http.Request,
 ) {
 
+	//retireve the athleteID from the context, which was set by the middleware
+	athleteID, ok := middleware.AthleteIDFromContext(r.Context())
+
+	if !ok {
+		http.Error(
+			w,
+			"unauhthorized",
+			http.StatusUnauthorized,
+		)
+		return
+	}
+	
 	hikes, err := database.GetActivitiesByType(
 		h.DB,
-		1,
+		athleteID,
 		"Hike",
 	)
 
@@ -146,9 +195,21 @@ func (h *ActivityHandler) GetWeightTraining(
 	r *http.Request,
 ) {
 
+	//retireve the athleteID from the context, which was set by the middleware
+	athleteID, ok := middleware.AthleteIDFromContext(r.Context())
+
+	if !ok {
+		http.Error(
+			w,
+			"unauhthorized",
+			http.StatusUnauthorized,
+		)
+		return
+	}
+
 	workouts, err := database.GetActivitiesByType(
 		h.DB,
-		1,
+		athleteID,
 		"WeightTraining",
 	)
 
@@ -187,9 +248,21 @@ func (h *ActivityHandler) GetRecentActivities(
 	r *http.Request,
 ) {
 
+	//retireve the athleteID from the context, which was set by the middleware
+	athleteID, ok := middleware.AthleteIDFromContext(r.Context())
+
+	if !ok {
+		http.Error(
+			w,
+			"unauhthorized",
+			http.StatusUnauthorized,
+		)
+		return
+	}
+
 	runs, err := database.GetRecentActivities(
 		h.DB,
-		1,
+		athleteID,
 		10,
 	)
 
@@ -218,15 +291,26 @@ func (h *ActivityHandler) GetRecentActivities(
 	}
 }
 
-
 func (h *ActivityHandler) GetRecentRuns(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
 
+	//retireve the athleteID from the context, which was set by the middleware
+	athleteID, ok := middleware.AthleteIDFromContext(r.Context())
+
+	if !ok {
+		http.Error(
+			w,
+			"unauhthorized",
+			http.StatusUnauthorized,
+		)
+		return
+	}
+
 	runs, err := database.GetRecentActivitiesByType(
 		h.DB,
-		1,
+		athleteID,
 		"Run",
 		10,
 	)
@@ -261,9 +345,21 @@ func (h *ActivityHandler) GetRecentHikes(
 	r *http.Request,
 ) {
 
+	//retireve the athleteID from the context, which was set by the middleware
+	athleteID, ok := middleware.AthleteIDFromContext(r.Context())
+
+	if !ok {
+		http.Error(
+			w,
+			"unauhthorized",
+			http.StatusUnauthorized,
+		)
+		return
+	}
+
 	hikes, err := database.GetRecentActivitiesByType(
 		h.DB,
-		1,
+		athleteID,
 		"Hike",
 		10,
 	)
@@ -298,9 +394,21 @@ func (h *ActivityHandler) GetRecentWeightTraining(
 	r *http.Request,
 ) {
 
+	//retireve the athleteID from the context, which was set by the middleware
+	athleteID, ok := middleware.AthleteIDFromContext(r.Context())
+
+	if !ok {
+		http.Error(
+			w,
+			"unauhthorized",
+			http.StatusUnauthorized,
+		)
+		return
+	}
+
 	workouts, err := database.GetRecentActivitiesByType(
 		h.DB,
-		1,
+		athleteID,
 		"WeightTraining",
 		10,
 	)

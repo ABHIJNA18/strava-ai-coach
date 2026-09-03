@@ -81,3 +81,13 @@ type TopSport struct {
 	Sport string `json:"sport"`
 	Count int    `json:"count"`
 }
+
+// Session represents a persistent application authentication credential.
+type Session struct {
+	ID         int64
+	AthleteID  int64
+	TokenHash  string
+	CreatedAt  time.Time
+	LastSeenAt time.Time
+	RevokedAt  *time.Time
+}

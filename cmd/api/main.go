@@ -4,10 +4,14 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 
+	"github.com/ABHIJNA18/strava-ai-coach/internal/auth"
 	"github.com/ABHIJNA18/strava-ai-coach/internal/coach"
 	"github.com/ABHIJNA18/strava-ai-coach/internal/database"
 	"github.com/ABHIJNA18/strava-ai-coach/internal/handlers"
+	"github.com/ABHIJNA18/strava-ai-coach/internal/middleware"
 	"github.com/joho/godotenv"
 )
 
@@ -21,14 +25,56 @@ func main() {
 		fmt.Println(".env file loaded successfully")
 	}
 
-	//create connect to databse
+	//========create connect to databse==============
 	db, err := database.NewPostgresConnection()
 	if err != nil {
 		panic(err)
 	}
 	defer db.Close()
 
-	// Connect to Python Coach Service
+	//========SESSIONS=================
+	//Create the session manager after creating the database connection
+
+	sessionSecure := strings.EqualFold(
+		os.Getenv("APP_ENV"),
+		"production",
+	)
+
+	//Check if explicitly whether the cookie should be Secure
+	//If yes, it overrides the automatic APP_ENV decision.
+
+	if configuredSecure := os.Getenv(
+		"SESSION_COOKIE_SECURE",
+	); configuredSecure != "" {
+		parsedSecure, parseErr := strconv.ParseBool(
+			configuredSecure,
+		)
+		if parseErr == nil {
+			sessionSecure = parsedSecure
+		}
+	}
+
+	sessionCookieName := os.Getenv(
+		"SESSION_COOKIE_NAME",
+	)
+
+	//if session cookie name isn't set, use default values based on whether the cookie is secure or not
+	if sessionCookieName == "" {
+		if sessionSecure {
+			sessionCookieName = "__Host-session"
+		} else {
+			sessionCookieName = "session_id"
+		}
+	}
+
+	sessionManager := auth.NewSessionManager(
+		db,
+		sessionCookieName,
+		sessionSecure,
+	)
+
+	// ============Connect to Python Coach Service====================
+
 	coachClient, coachConn, err := coach.NewClient("localhost:50051")
 	if err != nil {
 		panic(err)
@@ -53,9 +99,10 @@ func main() {
 		fmt.Println("Strava configuration loaded")
 	}
 
-	//auth and activity handlers
+	//=============auth and activity handlers=========================
+
 	activityHandler := handlers.NewActivityHandler(db)
-	authHandler := handlers.NewAuthHandler(db, clientID, clientSecret)
+	authHandler := handlers.NewAuthHandler(db, clientID, clientSecret, sessionManager)
 
 	//stats handler
 	statsHandler := handlers.NewStatsHandler(db)
@@ -65,6 +112,18 @@ func main() {
 		fmt.Fprintf(w, "Strava AI Coach running")
 	})
 
+	//===============Create a protected-handler helper=======================
+	//protected() takes the handler you want to protect, wraps it with RequireAuth, and returns the protected handler.
+
+	protected := func(
+		handler http.HandlerFunc,
+	) http.Handler {
+		return middleware.RequireAuth(
+			sessionManager,
+			http.HandlerFunc(handler),
+		)
+	}
+
 	//==== AUTH ENDPOINTS  =====
 
 	http.HandleFunc("/login", authHandler.Login)
@@ -73,23 +132,23 @@ func main() {
 
 	//==== STATS ENDPOINTS =====
 
-	http.HandleFunc("/stats", activityHandler.GetStats)
-	http.HandleFunc("/stats/top-sport", statsHandler.GetTopSport)
+	http.Handle("/stats", protected(activityHandler.GetStats))
+	http.Handle("/stats/top-sport", protected(statsHandler.GetTopSport))
 
 	//==== ACTIVITY ENDPOINTS =====
-	http.HandleFunc("/activities", activityHandler.GetActivities)
-	http.HandleFunc("/activities/runs", activityHandler.GetRuns)
-	http.HandleFunc("/activities/hikes", activityHandler.GetHikes)
-	http.HandleFunc("/activities/weight-training", activityHandler.GetWeightTraining)
-	http.HandleFunc("/activities/recent", activityHandler.GetRecentActivities)
-	http.HandleFunc("/activities/recent/runs", activityHandler.GetRecentRuns)
-	http.HandleFunc("/activities/recent/hikes", activityHandler.GetRecentHikes)
-	http.HandleFunc("/activities/recent/weight-training", activityHandler.GetRecentWeightTraining)
+	http.Handle("/activities", protected(activityHandler.GetActivities))
+	http.Handle("/activities/runs", protected(activityHandler.GetRuns))
+	http.Handle("/activities/hikes", protected(activityHandler.GetHikes))
+	http.Handle("/activities/weight-training", protected(activityHandler.GetWeightTraining))
+	http.Handle("/activities/recent", protected(activityHandler.GetRecentActivities))
+	http.Handle("/activities/recent/runs", protected(activityHandler.GetRecentRuns))
+	http.Handle("/activities/recent/hikes", protected(activityHandler.GetRecentHikes))
+	http.Handle("/activities/recent/weight-training", protected(activityHandler.GetRecentWeightTraining))
 
 	//==== COACH ENDPOINTS =====
 
-	http.HandleFunc("/coach/report", coachHandler.GetReport)
-	http.HandleFunc("/coach/coaching", coachHandler.GetCoaching)
+	http.Handle("/coach/report", protected(coachHandler.GetReport))
+	http.Handle("/coach/coaching", protected(coachHandler.GetCoaching))
 
 	//==== FRONTEND =====
 
@@ -98,17 +157,30 @@ func main() {
 
 	//==== FRONTEND DASHBOARD=====
 
-	http.HandleFunc("/dashboard", func(w http.ResponseWriter, r *http.Request) {
+	http.Handle(
+		"/dashboard", middleware.RequireAuth(sessionManager, http.HandlerFunc(
+			func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Cache-Control", "no-store")
+				http.ServeFile(
+					w,
+					r,
+					"./frontend/dashboard.html",
+				)
+			},
+		),
+		),
+	)
 
-		http.ServeFile(w, r, "./frontend/dashboard.html")
-
-	})
+	//==== LOGOUT=====
+	http.HandleFunc("/logout", authHandler.Logout)
 
 	//==== START SERVER =====
 
 	//verify server is running
 	fmt.Println("Server running on port 8080...")
-	http.ListenAndServe(":8080", nil)
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		fmt.Println("HTTP server stopped:", err)
+	}
 
 }
 
