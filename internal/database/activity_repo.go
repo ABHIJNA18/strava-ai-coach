@@ -694,3 +694,23 @@ func GetTopSportSince(db *sql.DB, athleteID int64, since time.Time) ([]TopSport,
 
 	return topSports, nil
 }
+
+func DeleteActivityByStravaID(
+	db *sql.DB,
+	athleteID int64,
+	stravaActivityID int64,
+) error {
+	query := `
+		DELETE FROM activities
+		WHERE athlete_id = $1
+		AND strava_activity_id = $2
+	`
+
+	_, err := db.Exec(
+		query,
+		athleteID,
+		stravaActivityID,
+	)
+
+	return err
+}//Deleting an already-deleted row returns no error, making the operation idempotent

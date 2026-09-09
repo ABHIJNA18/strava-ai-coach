@@ -1,0 +1,154 @@
+//handles GET validation, POST decoding, quick acknowledgement, and asynchronous dispatch.
+//Strava’s validation request uses hub.mode, hub.verify_token, and hub.challenge; successful validation must echo the challenge as JSON
+// This file exposes and validates the public Strava webhook HTTP endpoints.
+//The handler returns immediately after launching the goroutine. It does not wait for Strava API calls or PostgreSQL work.
+
+package webhook
+
+import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"log"
+	"net/http"
+)
+
+type Handler struct {
+	service    *WebhookService
+	verifyToken string
+}
+
+func NewHandler(
+	service *WebhookService,
+	verifyToken string,
+) *Handler {
+	return &Handler{
+		service:     service,
+		verifyToken: verifyToken,
+	}
+}
+
+// executes on both GET and POST on strava/webhooks but different functions depending on GET or POST
+// GET is for subscription verification which Strava would do 
+// POST is for receiving events from Strava, which we validate and then process asynchronously
+
+func (h *Handler) ServeHTTP(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	switch r.Method {
+	case http.MethodGet:
+		h.verifySubscription(w, r)
+
+	case http.MethodPost:
+		h.receiveEvent(w, r)
+
+	default:
+		http.Error(
+			w,
+			"method not allowed",
+			http.StatusMethodNotAllowed,
+		)
+	}
+}
+
+func (h *Handler) verifySubscription(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	query := r.URL.Query()
+
+	mode := query.Get("hub.mode")
+	verifyToken := query.Get("hub.verify_token")
+	challenge := query.Get("hub.challenge")
+
+	if mode != "subscribe" ||
+		verifyToken == "" ||
+		verifyToken != h.verifyToken ||
+		challenge == "" {
+		http.Error(
+			w,
+			"forbidden",
+			http.StatusForbidden,
+		)
+		return
+	}
+
+	w.Header().Set(
+		"Content-Type",
+		"application/json",
+	)
+
+	_ = json.NewEncoder(w).Encode(
+		map[string]string{
+			"hub.challenge": challenge, // returns the challenge back to Strava for verification
+		},
+	)
+}
+
+func (h *Handler) receiveEvent(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	//read body upto 1MB
+	body, err := io.ReadAll(
+		io.LimitReader(r.Body, 1<<20),
+	)
+	if err != nil {
+		http.Error(
+			w,
+			"failed to read request body",
+			http.StatusBadRequest,
+		)
+		return
+	}
+
+	var event Event
+
+	// Convert JSON into your Go Event
+	if err := json.Unmarshal(body, &event); err != nil {
+		http.Error(
+			w,
+			"invalid webhook JSON",
+			http.StatusBadRequest,
+		)
+		return
+	}
+
+	if err := validateEvent(event); err != nil {
+		http.Error(
+			w,
+			fmt.Sprintf("invalid webhook event: %v", err),
+			http.StatusBadRequest,
+		)
+		return
+	}
+
+	if !isSupportedEvent(event) {
+		//Got it, but I don’t need to do anything with this.
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("EVENT_IGNORED"))
+		return
+	}
+
+	// Signature verification is intentionally not enforced yet.
+	// It can be added here before dispatching the event later.
+
+	//Run this function concurrently instead of making the HTTP request wait for it
+	go func() {
+		defer func() {
+			if recovered := recover(); recovered != nil {
+				log.Printf(
+					"Webhook processing panic: %v",
+					recovered,
+				)
+			}
+		}()
+
+		h.service.ProcessEvent(event)
+	}()
+
+	//Returns a 200 OK to Strava immediately, so it doesn’t retry the webhook.
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte("EVENT_RECEIVED"))
+}

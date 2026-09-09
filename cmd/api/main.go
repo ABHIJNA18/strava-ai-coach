@@ -13,6 +13,7 @@ import (
 	"github.com/ABHIJNA18/strava-ai-coach/internal/handlers"
 	"github.com/ABHIJNA18/strava-ai-coach/internal/middleware"
 	"github.com/ABHIJNA18/strava-ai-coach/internal/strava"
+	"github.com/ABHIJNA18/strava-ai-coach/internal/webhook"
 	"github.com/joho/godotenv"
 )
 
@@ -101,6 +102,28 @@ func main() {
 	}
 	// ============Sync Service====================
 	syncService := strava.NewSyncService(db, clientID, clientSecret)
+
+	// ============WEBHOOK SERVICE====================
+
+	webhookVerifyToken := os.Getenv(
+		"STRAVA_WEBHOOK_VERIFY_TOKEN",
+	)
+
+	if webhookVerifyToken == "" {
+		panic(
+			"STRAVA_WEBHOOK_VERIFY_TOKEN environment variable is not set",
+		)
+	}
+
+	webhookService := webhook.NewWebhookService(
+		db,
+		syncService,
+	)
+
+	webhookHandler := webhook.NewHandler(
+		webhookService,
+		webhookVerifyToken,
+	)
 	//=============auth and activity handlers=========================
 
 	activityHandler := handlers.NewActivityHandler(db)
@@ -175,6 +198,9 @@ func main() {
 
 	//==== LOGOUT=====
 	http.HandleFunc("/logout", authHandler.Logout)
+
+	//==== WEBHOOKS =====
+	http.Handle("/webhooks/strava", webhookHandler)
 
 	//==== START SERVER =====
 

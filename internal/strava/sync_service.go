@@ -29,10 +29,10 @@ func NewSyncService(
 	}
 }
 
-func (s *SyncService) SyncActivities(
-	athleteID int64,
-	after time.Time,
-) error {
+// this is the function used when a user logs in for the first time, we fetch 90 days of activities from Strava
+// Store 90 days of activities in database
+func (s *SyncService) SyncActivities(athleteID int64, after time.Time) error {
+
 	stravaAthleteID, err := database.GetStravaAthleteIDByID(
 		s.db,
 		athleteID,
@@ -57,7 +57,7 @@ func (s *SyncService) SyncActivities(
 		)
 	}
 
-	//calls strava api and gets the activities 
+	//calls strava api and gets the activities
 	activities, err := GetActivitiesAfter(
 		accessToken,
 		after,
@@ -104,6 +104,71 @@ func (s *SyncService) SyncActivities(
 	); err != nil {
 		return fmt.Errorf(
 			"failed to save activities: %w",
+			err,
+		)
+	}
+
+	return nil
+}
+
+//this is the fucntion used when a webhook triggeres syncing an activity, ex: update, delete or create
+
+func (s *SyncService) SyncActivity(athleteID int64, stravaActivityID int64) error {
+
+	stravaAthleteID, err :=
+		database.GetStravaAthleteIDByID(
+			s.db,
+			athleteID,
+		)
+	if err != nil {
+		return fmt.Errorf(
+			"failed to find Strava athlete ID: %w",
+			err,
+		)
+	}
+
+	accessToken, err := GetValidAccessToken(
+		s.db,
+		s.clientID,
+		s.clientSecret,
+		stravaAthleteID,
+	)
+	if err != nil {
+		return fmt.Errorf(
+			"failed to obtain valid Strava access token: %w",
+			err,
+		)
+	}
+
+	//call Strava API to get the activity details using the activity ID
+	activity, err := GetActivity(
+		accessToken,
+		stravaActivityID,
+	)
+	if err != nil {
+		return fmt.Errorf(
+			"failed to fetch activity: %w",
+			err,
+		)
+	}
+
+	dbActivity, err := MapActivityToDatabase(
+		activity,
+		athleteID,
+	)
+	if err != nil {
+		return fmt.Errorf(
+			"failed to map activity: %w",
+			err,
+		)
+	}
+
+	if err := database.SaveActivities(
+		s.db,
+		[]database.Activity{dbActivity},
+	); err != nil {
+		return fmt.Errorf(
+			"failed to save activity: %w",
 			err,
 		)
 	}

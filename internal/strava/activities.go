@@ -68,3 +68,54 @@ func GetActivitiesPage(
 
 	return activities, nil
 }
+
+//Fetches activity details from Strava API from the given activity ID
+// Currently used when processing Strava Webhookn events
+
+func GetActivity(
+	accessToken string,
+	stravaActivityID int64,
+) (Activity, error) {
+	url := fmt.Sprintf(
+		"https://www.strava.com/api/v3/activities/%d",
+		stravaActivityID,
+	)
+
+	req, err := http.NewRequest(
+		http.MethodGet,
+		url,
+		nil,
+	)
+	if err != nil {
+		return Activity{}, err
+	}
+
+	req.Header.Set(
+		"Authorization",
+		"Bearer "+accessToken,
+	)
+
+	resp, err := stravaHTTPClient.Do(req)
+	if err != nil {
+		return Activity{}, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return Activity{}, fmt.Errorf(
+			"failed to fetch activity %d: %s",
+			stravaActivityID,
+			resp.Status,
+		)
+	}
+
+	var activity Activity
+
+	if err := json.NewDecoder(
+		resp.Body,
+	).Decode(&activity); err != nil {
+		return Activity{}, err
+	}
+
+	return activity, nil
+}
