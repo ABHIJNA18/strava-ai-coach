@@ -86,7 +86,7 @@ func main() {
 	coachService := coach.NewService(db, coachClient)
 	coachHandler := handlers.NewCoachHandler(coachService)
 
-	//get strava env variables
+	//========= STRAVA VARIABLES ==========================
 	clientID := os.Getenv("STRAVA_CLIENT_ID")
 	clientSecret := os.Getenv("STRAVA_CLIENT_SECRET")
 
@@ -100,6 +100,14 @@ func main() {
 	} else {
 		fmt.Println("Strava configuration loaded")
 	}
+
+	//======== STRAVA REDIRECT URI ==========================
+	redirectURI := os.Getenv("STRAVA_REDIRECT_URI")
+
+	if redirectURI == "" {
+		panic("STRAVA_REDIRECT_URI environment variable is not set")
+	}
+
 	// ============Sync Service====================
 	syncService := strava.NewSyncService(db, clientID, clientSecret)
 
@@ -127,7 +135,7 @@ func main() {
 	//=============auth and activity handlers=========================
 
 	activityHandler := handlers.NewActivityHandler(db)
-	authHandler := handlers.NewAuthHandler(db, clientID, clientSecret, sessionManager, syncService)
+	authHandler := handlers.NewAuthHandler(db, clientID, clientSecret, redirectURI, sessionManager, syncService, sessionSecure)
 
 	//stats handler
 	statsHandler := handlers.NewStatsHandler(db)

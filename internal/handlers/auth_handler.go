@@ -18,16 +18,28 @@ type AuthHandlers struct {
 	ClientSecret string
 	Sessions     *auth.SessionManager
 	SyncService  *strava.SyncService
+	RedirectURI  string
+	Secure       bool
 }
 
 // func to return handler
-func NewAuthHandler(db *sql.DB, clientID string, clientSecret string, sessions *auth.SessionManager, syncService *strava.SyncService) *AuthHandlers {
+func NewAuthHandler(
+	db *sql.DB,
+	clientID string,
+	clientSecret string,
+	redirectURI string,
+	sessions *auth.SessionManager,
+	syncService *strava.SyncService,
+	secure bool,
+) *AuthHandlers {
 	return &AuthHandlers{
 		DB:           db,
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
+		RedirectURI:  redirectURI,
 		Sessions:     sessions,
 		SyncService:  syncService,
+		Secure:       secure,
 	}
 }
 
@@ -37,6 +49,8 @@ func (h *AuthHandlers) Login(w http.ResponseWriter, r *http.Request) {
 	// strava.LoginHandler(h.clientID) returns func and (w,r) is used to execute / call the function
 	strava.LoginHandler(
 		h.ClientID,
+		h.RedirectURI,
+		h.Secure,
 	)(w, r)
 }
 
@@ -46,9 +60,11 @@ func (h *AuthHandlers) Callback(w http.ResponseWriter, r *http.Request) {
 	strava.CallbackHandler(
 		h.ClientID,
 		h.ClientSecret,
+		h.RedirectURI,
 		h.DB,
 		h.Sessions,
 		h.SyncService,
+		h.Secure,
 	)(w, r)
 }
 

@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/ABHIJNA18/strava-ai-coach/internal/auth"
@@ -14,14 +15,74 @@ import (
 )
 
 // contains code which handles the login and callback routes for the OAuth flow
-func LoginHandler(clientID string) http.HandlerFunc {
+func LoginHandler(
+	clientID string,
+	redirectURI string,
+	secure bool,
+) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		authURL := fmt.Sprintf("https://www.strava.com/oauth/authorize?client_id=%s&response_type=code&redirect_uri=http://localhost:8080/oauth/callback&approval_prompt=force&scope=read,activity:read_all", clientID)
-		http.Redirect(w, r, authURL, http.StatusFound)
+		state, err := GenerateOAuthState()
+		if err != nil {
+			http.Error(
+				w,
+				"failed to initialize OAuth login",
+				http.StatusInternalServerError,
+			)
+			return
+		}
+
+		SetOAuthStateCookie(
+			w,
+			state,
+			secure,
+		)
+
+		query := url.Values{}
+		query.Set("client_id", clientID)
+		query.Set("response_type", "code")
+		query.Set("redirect_uri", redirectURI)
+		query.Set("approval_prompt", "auto")
+		query.Set("scope", "read,activity:read_all")
+		query.Set("state", state)
+
+		authURL := "https://www.strava.com/oauth/authorize?" +
+			query.Encode()
+
+		http.Redirect(
+			w,
+			r,
+			authURL,
+			http.StatusFound,
+		)
 	}
 }
-func CallbackHandler(clientID string, clientSecret string, db *sql.DB, sessions *auth.SessionManager, syncService *SyncService) http.HandlerFunc {
+
+func CallbackHandler(
+	clientID string,
+	clientSecret string,
+	redirectURI string,
+	db *sql.DB,
+	sessions *auth.SessionManager,
+	syncService *SyncService,
+	secure bool,
+) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		//check callback state with the state stored in the cookie to prevent CSRF attacks
+		callbackState := r.URL.Query().Get("state")
+
+		if !ValidateOAuthState(r, callbackState) {
+			ClearOAuthStateCookie(w, secure)
+
+			http.Error(
+				w,
+				"invalid OAuth state",
+				http.StatusBadRequest,
+			)
+			return
+		}
+
+		ClearOAuthStateCookie(w, secure)
 
 		//Oauth error handling
 		oauthError := r.URL.Query().Get("error")
@@ -41,7 +102,7 @@ func CallbackHandler(clientID string, clientSecret string, db *sql.DB, sessions 
 		fmt.Println("Recevived auth code")
 
 		//exchange auth code for access token
-		tokenResponse, err := ExchangeTokenForCode(clientID, clientSecret, auth_code)
+		tokenResponse, err := ExchangeTokenForCode(clientID, clientSecret, auth_code, redirectURI)
 		if err != nil {
 			http.Error(w, "Failed to exchange token: "+err.Error(), http.StatusInternalServerError)
 			return

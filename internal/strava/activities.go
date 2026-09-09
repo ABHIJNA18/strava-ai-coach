@@ -19,7 +19,7 @@ func GetActivitiesPage(
 	after time.Time,
 ) ([]Activity, error) {
 	endpoint, err := url.Parse(
-		"https://www.strava.com/api/v3/athlete/activities",
+		StravaAPIBaseURL() + "/athlete/activities",
 	)
 	if err != nil {
 		return nil, err
@@ -77,7 +77,8 @@ func GetActivity(
 	stravaActivityID int64,
 ) (Activity, error) {
 	url := fmt.Sprintf(
-		"https://www.strava.com/api/v3/activities/%d",
+		"%s/activities/%d",
+		StravaAPIBaseURL(),
 		stravaActivityID,
 	)
 
