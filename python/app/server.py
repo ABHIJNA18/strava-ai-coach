@@ -4,11 +4,13 @@
 
 import json
 import grpc
+import os
 
 from concurrent import futures
 
 from python.generated import coach_pb2
 from python.generated import coach_pb2_grpc
+from python.app.config import validate_required_configuration
 from python.app.coach import (
     generate_coaching_summary,
     generate_personalized_coaching,
@@ -66,6 +68,9 @@ class CoachService(
             )
 
 def serve():
+
+    # ensure required configuration is set before starting the server
+    validate_required_configuration()
     server = grpc.server(
         futures.ThreadPoolExecutor(
             max_workers=10
@@ -76,13 +81,18 @@ def serve():
         CoachService(),
         server,
     )
+    grpc_port = (
+    os.getenv("PYTHON_GRPC_PORT")
+    or os.getenv("PORT")
+    or "50051"
+   )
 
     server.add_insecure_port(
-        "[::]:50051"
+        f"[::]:{grpc_port}"
     )
 
     print(
-        "Python Coach Service listening on port 50051..."
+    f"Python Coach Service listening on port {grpc_port}..."
     )
 
     server.start()

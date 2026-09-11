@@ -5,6 +5,7 @@ type TokenRequest struct {
 	ClientSecret string `json:"client_secret"`
 	Code         string `json:"code"`
 	GrantType    string `json:"grant_type"`
+	RedirectURI  string `json:"redirect_uri"`
 }
 
 type Athlete struct {

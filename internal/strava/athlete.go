@@ -10,8 +10,8 @@ import (
 
 func GetAthlete(accessToken string) (*Athlete, error) {
 
-	//using http.newRequest and usinng a client sending a request 
-	req, err := http.NewRequest("GET", "https://www.strava.com/api/v3/athlete", nil)
+	//using http.newRequest and usinng a client sending a request
+	req, err := http.NewRequest("GET", StravaAPIBaseURL()+"/athlete", nil)
 	if err != nil {
 		fmt.Println("Error creating new request", err.Error())
 		return nil, err
@@ -19,15 +19,15 @@ func GetAthlete(accessToken string) (*Athlete, error) {
 
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 
-	//get reusable client 
+	//get reusable client
 	client := stravaHTTPClient
 	resp, err := client.Do(req)
-	
+
 	//error handling
 	if err != nil {
 		return nil, err
 	}
-	if resp.StatusCode != http.StatusOK{
+	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("failed to get athlete data. Status code : %d", resp.StatusCode)
 	}
 
@@ -40,7 +40,7 @@ func GetAthlete(accessToken string) (*Athlete, error) {
 	}
 
 	fmt.Println("========== ATHLETE DATA ==========")
-	fmt.Printf("%+v\n", athlete)
+	fmt.Println("Athlete data fetched successfully")
 
 	return &athlete, nil
 

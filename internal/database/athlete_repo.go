@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"time"
 )
 
 // save athlete to DB and return the database ID for oauth to be stored in DB later on
@@ -58,4 +59,74 @@ func GetAthleteByStravaAthleteID ( db *sql.DB, stravaAthleteID int64 )(int64, er
 			return 0, err
 		}
 		return athleteID, nil
+}
+
+func GetStravaAthleteIDByID(
+	db *sql.DB,
+	athleteID int64,
+) (int64, error) {
+	query := `
+		SELECT strava_athlete_id
+		FROM athletes
+		WHERE id = $1
+	`
+
+	var stravaAthleteID int64
+
+	err := db.QueryRow(
+		query,
+		athleteID,
+	).Scan(&stravaAthleteID)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return stravaAthleteID, nil
+}
+
+func GetInitialSyncCompletedAt(
+	db *sql.DB,
+	athleteID int64,
+) (*time.Time, error) {
+	query := `
+		SELECT initial_sync_completed_at
+		FROM athletes
+		WHERE id = $1
+	`
+
+	var completedAt sql.NullTime
+
+	err := db.QueryRow(
+		query,
+		athleteID,
+	).Scan(&completedAt)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if !completedAt.Valid {
+		return nil, nil
+	}
+
+	return &completedAt.Time, nil
+}
+
+func MarkInitialSyncCompleted(
+	db *sql.DB,
+	athleteID int64,
+) error {
+	query := `
+		UPDATE athletes
+		SET initial_sync_completed_at = NOW()
+		WHERE id = $1
+	`
+
+	_, err := db.Exec(
+		query,
+		athleteID,
+	)
+
+	return err
 }

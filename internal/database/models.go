@@ -5,11 +5,12 @@ import "time"
 //tags are needed as APIs usually return: api formats like "total_distance" instead of TotalDistance
 
 type Athlete struct {
-	ID              int64
-	StravaAthleteID int64
-	Firstname       string
-	Lastname        string
-	CreatedAt       time.Time
+	ID                     int64
+	StravaAthleteID        int64
+	Firstname              string
+	Lastname               string
+	CreatedAt              time.Time
+	InitialSyncCompletedAt *time.Time
 }
 
 type OAuthToken struct {
@@ -80,4 +81,14 @@ type ActivityStats struct {
 type TopSport struct {
 	Sport string `json:"sport"`
 	Count int    `json:"count"`
+}
+
+// Session represents a persistent application authentication credential.
+type Session struct {
+	ID         int64
+	AthleteID  int64
+	TokenHash  string
+	CreatedAt  time.Time
+	LastSeenAt time.Time
+	RevokedAt  *time.Time
 }

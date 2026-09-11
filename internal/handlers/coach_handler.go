@@ -1,5 +1,5 @@
-// protobuf still returns the structured coaching JSON as a string. This handler converts that string into a real JSON object for the browser.
 package handlers
+// protobuf still returns the structured coaching JSON as a string. This handler converts that string into a real JSON object for the browser.
 
 import (
 	"context"
@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/ABHIJNA18/strava-ai-coach/internal/middleware"
 )
 
 type CoachService interface {
@@ -40,26 +42,61 @@ type coachingResponse struct {
 }
 
 func (h *CoachHandler) GetReport(w http.ResponseWriter, r *http.Request) {
+
+	//get athleteID from the context, set by middleware
+
+	athleteID, ok := middleware.AthleteIDFromContext(
+		r.Context(),
+	)
+	if !ok {
+		http.Error(
+			w,
+			"unauthorized",
+			http.StatusUnauthorized,
+		)
+		return
+	}
+
 	if r.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 	fmt.Println("coach report request started:", r.Method, r.URL.Path, time.Now().UnixNano())
-	summary, err := h.coachService.AnalyzeRecentRuns(r.Context(), 1)
+	summary, err := h.coachService.AnalyzeRecentRuns(r.Context(), athleteID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		fmt.Println("Failed to generate report:", err)
+		http.Error(w, "failed to generate report", http.StatusInternalServerError)
 		return
 	}
 	fmt.Println("coach report request finished:", time.Now().UnixNano())
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(coachReportResponse{
-		Summary: summary,
-	})
+
+	if err := json.NewEncoder(w).Encode(
+		coachReportResponse{
+			Summary: summary,
+		},
+	); err != nil {
+		fmt.Println("Failed to encode coaching report response:", err)
+	}
 }
 
 // GetCoaching receives a goal and returns structured personalized coaching.
 func (h *CoachHandler) GetCoaching(w http.ResponseWriter, r *http.Request) {
+
+	//get athleteID from the context, set by middleware
+
+	athleteID, ok := middleware.AthleteIDFromContext(
+		r.Context(),
+	)
+	if !ok {
+		http.Error(
+			w,
+			"unauthorized",
+			http.StatusUnauthorized,
+		)
+		return
+	}
 
 	if r.Method != http.MethodPost {
 		http.Error(
@@ -69,6 +106,25 @@ func (h *CoachHandler) GetCoaching(w http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
+
+	// prevents oversized request bodies and excessively large prompts.
+	if !strings.HasPrefix(
+		r.Header.Get("Content-Type"),
+		"application/json",
+	) {
+		http.Error(
+			w,
+			"Content-Type must be application/json",
+			http.StatusUnsupportedMediaType,
+		)
+		return
+	}
+
+	r.Body = http.MaxBytesReader(
+		w,
+		r.Body,
+		32<<10,
+	)
 
 	var request coachingRequest
 
@@ -87,6 +143,7 @@ func (h *CoachHandler) GetCoaching(w http.ResponseWriter, r *http.Request) {
 		request.Goal,
 	)
 
+	//check if goal is empty
 	if request.Goal == "" {
 		http.Error(
 			w,
@@ -96,7 +153,17 @@ func (h *CoachHandler) GetCoaching(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	coaching, err := h.coachService.GenerateCoaching(r.Context(), 1, request.Goal)
+	//check if goal is too long
+	if len([]rune(request.Goal)) > 2000 {
+		http.Error(
+			w,
+			"goal must be 2000 characters or fewer",
+			http.StatusBadRequest,
+		)
+		return
+	}
+
+	coaching, err := h.coachService.GenerateCoaching(r.Context(), athleteID, request.Goal)
 
 	if err != nil {
 		http.Error(

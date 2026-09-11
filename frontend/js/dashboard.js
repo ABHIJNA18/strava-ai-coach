@@ -133,12 +133,30 @@ topSportButton.addEventListener("click", async function(){
 
         const activityCount = sports[0].count;
 
-        topSportBox.innerHTML =
+        // Build the message with DOM nodes instead of innerHTML. This keeps
+        // API/database values as text while preserving the bold sport name.
+        topSportBox.replaceChildren();
+
+        const intro = document.createElement("span");
+        intro.textContent =
             `Your top sport${sports.length > 1 ? "s" : ""} ` +
-            `in the last 30 days ${sports.length > 1 ? "are..." : "is..."} ` +
-            `<br><strong>${sportText}</strong></br>` +
-            `You logged <strong>${activityCount} activities `+
-            `${sports.length >1 ? "each." : "."}` ;
+            `in the last 30 days ${sports.length > 1 ? "are" : "is"} `;
+
+        const sportElement = document.createElement("strong");
+        sportElement.textContent = sportText;
+
+        const activityText = document.createElement("span");
+        activityText.textContent =
+            `You logged ${activityCount} activities` +
+            `${sports.length > 1 ? " each." : "."}`;
+
+        topSportBox.append(
+            intro,
+            document.createElement("br"),
+            sportElement,
+            document.createElement("br"),
+            activityText,
+        );
 
     } catch(error){
 
@@ -245,6 +263,49 @@ function renderCoachingResponse(coaching) {
     });
 }
 
+// ==========================================
+// PROFILE AND LOGOUT
+// ==========================================
+
+const profileButton = document.getElementById("profile-button");
+const profileMenu = document.getElementById("profile-menu");
+const logoutButton = document.getElementById("logout-button");
+
+profileButton.addEventListener("click", function () {
+    const isOpen = !profileMenu.hidden;
+
+    profileMenu.hidden = isOpen;
+    profileButton.setAttribute(
+        "aria-expanded",
+        String(!isOpen)
+    );
+});
+
+logoutButton.addEventListener("click", async function () {
+    logoutButton.disabled = true;
+    logoutButton.textContent = "Logging out...";
+
+    try {
+        const response = await fetch("/logout", {
+            method: "POST"
+        });
+
+        if (!response.ok) {
+            throw new Error("Logout request failed");
+        }
+
+        // The server has cleared the HttpOnly cookie.
+        window.location.href = "/";
+
+    } catch (error) {
+        console.error("Logout failed:", error);
+
+        logoutButton.disabled = false;
+        logoutButton.textContent = "Log out";
+
+        alert("Unable to log out. Please try again.");
+    }
+});
 
 // ==========================================
 // RECENT ACTIVITIES

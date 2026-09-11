@@ -1,23 +1,88 @@
+//the callback must create an application authentication cookie after the athlete and Strava tokens are saved.
+//OAuth should perform the 90-day sync only when initial_sync_completed_at is still NULL
+
 package strava
 
 import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"net/url"
 	"time"
 
+	"github.com/ABHIJNA18/strava-ai-coach/internal/auth"
 	"github.com/ABHIJNA18/strava-ai-coach/internal/database"
 )
 
 // contains code which handles the login and callback routes for the OAuth flow
-func LoginHandler(clientID string) http.HandlerFunc {
+func LoginHandler(
+	clientID string,
+	redirectURI string,
+	secure bool,
+) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		authURL := fmt.Sprintf("https://www.strava.com/oauth/authorize?client_id=%s&response_type=code&redirect_uri=http://localhost:8080/oauth/callback&approval_prompt=force&scope=read,activity:read_all", clientID)
-		http.Redirect(w, r, authURL, http.StatusFound)
+		state, err := GenerateOAuthState()
+		if err != nil {
+			http.Error(
+				w,
+				"failed to initialize OAuth login",
+				http.StatusInternalServerError,
+			)
+			return
+		}
+
+		SetOAuthStateCookie(
+			w,
+			state,
+			secure,
+		)
+
+		query := url.Values{}
+		query.Set("client_id", clientID)
+		query.Set("response_type", "code")
+		query.Set("redirect_uri", redirectURI)
+		query.Set("approval_prompt", "auto")
+		query.Set("scope", "read,activity:read_all")
+		query.Set("state", state)
+
+		authURL := "https://www.strava.com/oauth/authorize?" +
+			query.Encode()
+
+		http.Redirect(
+			w,
+			r,
+			authURL,
+			http.StatusFound,
+		)
 	}
 }
-func CallbackHandler(clientID string, clientSecret string, db *sql.DB) http.HandlerFunc {
+
+func CallbackHandler(
+	clientID string,
+	clientSecret string,
+	redirectURI string,
+	db *sql.DB,
+	sessions *auth.SessionManager,
+	syncService *SyncService,
+	secure bool,
+) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		//check callback state with the state stored in the cookie to prevent CSRF attacks
+		callbackState := r.URL.Query().Get("state")
+
+		if !ValidateOAuthState(r, callbackState) {
+			ClearOAuthStateCookie(w, secure)
+
+			http.Error(
+				w,
+				"invalid OAuth state",
+				http.StatusBadRequest,
+			)
+			return
+		}
+
+		ClearOAuthStateCookie(w, secure)
 
 		//Oauth error handling
 		oauthError := r.URL.Query().Get("error")
@@ -37,7 +102,7 @@ func CallbackHandler(clientID string, clientSecret string, db *sql.DB) http.Hand
 		fmt.Println("Recevived auth code")
 
 		//exchange auth code for access token
-		tokenResponse, err := ExchangeTokenForCode(clientID, clientSecret, auth_code)
+		tokenResponse, err := ExchangeTokenForCode(clientID, clientSecret, auth_code, redirectURI)
 		if err != nil {
 			http.Error(w, "Failed to exchange token: "+err.Error(), http.StatusInternalServerError)
 			return
@@ -49,7 +114,8 @@ func CallbackHandler(clientID string, clientSecret string, db *sql.DB) http.Hand
 			http.Error(w, "failed to fetch athlete", http.StatusInternalServerError)
 			return
 		}
-		fmt.Printf("Athlete data fetched successfully %s, %s \n", athlete.Firstname, athlete.Lastname)
+		//fmt.Printf("Athlete data fetched successfully %s, %s \n", athlete.Firstname, athlete.Lastname)
+		fmt.Println("Athlete data fetched successfully")
 
 		// change from strava.Athlete to database.Athlete to store athlete in db
 		dbAthlete := database.Athlete{
@@ -84,76 +150,81 @@ func CallbackHandler(clientID string, clientSecret string, db *sql.DB) http.Hand
 
 		fmt.Println("Tokens saved to DB sucessfully")
 
-		//get all the activities using access token
-		activities, err := GetAllActivities(tokenResponse.AccessToken)
+		//OAuth should perform the 90-day sync only when initial_sync_completed_at is still NULL
+		initialSyncCompletedAt, err :=
+			database.GetInitialSyncCompletedAt(
+				db,
+				athleteID,
+			)
 		if err != nil {
-			http.Error(w, "Failed to fetch all activities", http.StatusInternalServerError)
+			http.Error(
+				w,
+				"failed to check initial synchronization state",
+				http.StatusInternalServerError,
+			)
 			return
 		}
-		fmt.Printf(" %d Activities fetched successfully :", len(activities))
-		//fmt.Fprintf(w, " %d Activities fetched successfully :", len(activities))
 
-		//creating the variable of type database.Activities to insert into DB
-		var dbActivities []database.Activity
+		if initialSyncCompletedAt == nil {
+			fmt.Println("Starting initial 90-day activity synchronization")
 
-		//parse timestamps and append
-		for _, activity := range activities {
+			after := time.Now().AddDate(0, 0, -90)
 
-			startDate, err := time.Parse(time.RFC3339, activity.StartDate)
-			if err != nil {
+			if err := syncService.SyncActivities(
+				athleteID,
+				after,
+			); err != nil {
+				fmt.Println(
+					"Initial activity synchronization failed:",
+					err,
+				)
+
+				http.Error(
+					w,
+					"Initial activity synchronization failed. Please try again.",
+					http.StatusInternalServerError,
+				)
 				return
 			}
 
-			startDateLocal, err := time.Parse(time.RFC3339, activity.StartDateLocal)
-			if err != nil {
+			if err := database.MarkInitialSyncCompleted(
+				db,
+				athleteID,
+			); err != nil {
+				http.Error(
+					w,
+					"failed to mark initial synchronization complete",
+					http.StatusInternalServerError,
+				)
 				return
 			}
 
-			dbActivities = append(
-				dbActivities,
-				database.Activity{
-
-					StravaActivityID:     activity.ID,
-					AthleteID:            athleteID,
-					Name:                 activity.Name,
-					Type:                 activity.Type,
-					SportType:            activity.SportType,
-					Distance:             activity.Distance,
-					MovingTime:           activity.MovingTime,
-					ElapsedTime:          activity.ElapsedTime,
-					TotalElevationGain:   activity.TotalElevationGain,
-					AverageSpeed:         activity.AverageSpeed,
-					MaxSpeed:             activity.MaxSpeed,
-					AverageHeartrate:     activity.AverageHeartrate,
-					MaxHeartrate:         activity.MaxHeartrate,
-					AverageCadence:       activity.AverageCadence,
-					AverageWatts:         activity.AverageWatts,
-					MaxWatts:             activity.MaxWatts,
-					WeightedAverageWatts: activity.WeightedAverageWatts,
-					Kilojoules:           activity.Kilojoules,
-					SufferScore:          activity.SufferScore,
-					DeviceName:           activity.DeviceName,
-					StartDate:            startDate,
-					StartDateLocal:       startDateLocal,
-				},
-			)
-
-		}
-
-		err = database.SaveActivities(db, dbActivities)
-
-		if err != nil {
+			fmt.Println("Initial 90-day synchronization completed")
+		} else {
 			fmt.Println(
-				"Failed to save activities:",
-				err,
+				"Initial synchronization already completed; skipping",
+			)
+		}
+
+		//the callback must create an application authentication cookie after the athlete and Strava tokens are saved.
+
+		sessionToken, err := sessions.CreateSession(
+			athleteID,
+		)
+		if err != nil {
+			http.Error(
+				w,
+				"Failed to create application session",
+				http.StatusInternalServerError,
 			)
 			return
 		}
 
-		fmt.Printf(
-			"\n %d activities saved successfully\n",
-			len(dbActivities),
+		sessions.SetCookie(
+			w,
+			sessionToken,
 		)
+
 		// redirecting the users to dashboard page from login page after successfull login
 		http.Redirect(w, r, "/dashboard", http.StatusFound)
 

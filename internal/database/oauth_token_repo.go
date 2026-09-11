@@ -32,7 +32,7 @@ func SaveOauthToken(db *sql.DB, token OAuthToken) error {
     return err
 }
 
-func GetOAuthTokenByAthleteID (db *sql.DB, athleteID int64)(*OAuthToken, error){
+func GetOAuthTokenByAthleteID(db *sql.DB, athleteID int64)(*OAuthToken, error){
 	query := `
 
 	SELECT
@@ -64,7 +64,7 @@ func GetOAuthTokenByAthleteID (db *sql.DB, athleteID int64)(*OAuthToken, error){
 	return &token, nil
 }
 
-func UpdateOAuthToken (db *sql.DB, token *OAuthToken ) error {
+func UpdateOAuthToken(db *sql.DB, token *OAuthToken ) error {
 	query := `
 	UPDATE oauth_tokens
 	SET
@@ -84,4 +84,24 @@ func UpdateOAuthToken (db *sql.DB, token *OAuthToken ) error {
 
 	return err
 
+}
+
+//Strava deauthorization must invalidate the stored Strava authorization
+//The athlete and activities remain stored
+
+func DeleteOAuthTokenByAthleteID(
+	db *sql.DB,
+	athleteID int64,
+) error {
+	query := `
+		DELETE FROM oauth_tokens
+		WHERE athlete_id = $1
+	`
+
+	_, err := db.Exec(
+		query,
+		athleteID,
+	)
+
+	return err
 }

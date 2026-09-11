@@ -278,6 +278,10 @@ func GetActivitiesByAthleteID(
 		)
 	}
 
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
 	return activities, nil
 }
 
@@ -368,6 +372,11 @@ func GetActivitiesByType(
 
 		activities = append(activities, activity)
 	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
 	return activities, nil
 }
 
@@ -457,6 +466,11 @@ func GetRecentActivitiesByType(
 
 		activities = append(activities, activity)
 	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
 	return activities, nil
 }
 
@@ -544,6 +558,11 @@ func GetActivitiesByTypeSince(
 
 		activities = append(activities, activity)
 	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
 	return activities, nil
 }
 
@@ -694,3 +713,33 @@ func GetTopSportSince(db *sql.DB, athleteID int64, since time.Time) ([]TopSport,
 
 	return topSports, nil
 }
+
+func DeleteActivityByStravaID(
+	db *sql.DB,
+	athleteID int64,
+	stravaActivityID int64,
+) (bool, error) {
+	query := `
+		DELETE FROM activities
+		WHERE athlete_id = $1
+		AND strava_activity_id = $2
+	`
+
+	result, err := db.Exec(
+		query,
+		athleteID,
+		stravaActivityID,
+	)
+	if err != nil {
+		return false, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+
+	return rowsAffected > 0, nil
+}
+
+// Deleting an already-deleted row remains idempotent; it returns false, nil.

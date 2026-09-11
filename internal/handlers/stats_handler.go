@@ -3,10 +3,12 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/ABHIJNA18/strava-ai-coach/internal/database"
+	"github.com/ABHIJNA18/strava-ai-coach/internal/middleware"
 )
 
 type StatsHandler struct {
@@ -25,6 +27,19 @@ type TopSportResponse struct {
 
 func (h *StatsHandler) GetTopSport(w http.ResponseWriter, r *http.Request) {
 
+	//get the athleteID from the context, which was set by the middleware
+	athleteID, ok := middleware.AthleteIDFromContext(
+		r.Context(),
+	)
+	if !ok {
+		http.Error(
+			w,
+			"unauthorized",
+			http.StatusUnauthorized,
+		)
+		return
+	}
+
 	if r.Method != http.MethodGet {
 		http.Error(
 			w,
@@ -38,16 +53,13 @@ func (h *StatsHandler) GetTopSport(w http.ResponseWriter, r *http.Request) {
 
 	topSports, err := database.GetTopSportSince(
 		h.DB,
-		1,
+		athleteID,
 		since,
 	)
 
 	if err != nil {
-		http.Error(
-			w,
-			err.Error(),
-			http.StatusInternalServerError,
-		)
+		fmt.Println("Failed to load top sport:", err)
+		http.Error(w, "failed to load top sport", http.StatusInternalServerError)
 		return
 	}
 
@@ -62,11 +74,8 @@ func (h *StatsHandler) GetTopSport(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if err != nil {
-		http.Error(
-			w,
-			err.Error(),
-			http.StatusInternalServerError,
-		)
+		fmt.Println("Failed to encode top sport response:", err)
+		http.Error(w, "failed to encode top sport response", http.StatusInternalServerError)
 		return
 	}
 
