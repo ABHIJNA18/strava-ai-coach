@@ -7,29 +7,32 @@ package webhook
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"time"
 )
 
 type Handler struct {
-	service    *WebhookService
-	verifyToken string
+	service       *WebhookService
+	verifyToken   string
+	signingSecret string
 }
 
 func NewHandler(
 	service *WebhookService,
 	verifyToken string,
+	signingSecret string,
 ) *Handler {
 	return &Handler{
-		service:     service,
-		verifyToken: verifyToken,
+		service:       service,
+		verifyToken:   verifyToken,
+		signingSecret: signingSecret,
 	}
 }
 
 // executes on both GET and POST on strava/webhooks but different functions depending on GET or POST
-// GET is for subscription verification which Strava would do 
+// GET is for subscription verification which Strava would do
 // POST is for receiving events from Strava, which we validate and then process asynchronously
 
 func (h *Handler) ServeHTTP(
@@ -103,6 +106,23 @@ func (h *Handler) receiveEvent(
 		return
 	}
 
+	//verify the signature 
+	signature := r.Header.Get("X-Strava-Signature")
+
+	if !verifySignature(
+		signature,
+		body,
+		h.signingSecret,
+		time.Now(),
+	) {
+		http.Error(
+			w,
+			"invalid webhook signature",
+			http.StatusForbidden,
+		)
+		return
+	}
+
 	var event Event
 
 	// Convert JSON into your Go Event
@@ -116,11 +136,8 @@ func (h *Handler) receiveEvent(
 	}
 
 	if err := validateEvent(event); err != nil {
-		http.Error(
-			w,
-			fmt.Sprintf("invalid webhook event: %v", err),
-			http.StatusBadRequest,
-		)
+		log.Printf("Invalid webhook event: %v", err)
+		http.Error(w, "invalid webhook event", http.StatusBadRequest)
 		return
 	}
 
@@ -130,9 +147,6 @@ func (h *Handler) receiveEvent(
 		_, _ = w.Write([]byte("EVENT_IGNORED"))
 		return
 	}
-
-	// Signature verification is intentionally not enforced yet.
-	// It can be added here before dispatching the event later.
 
 	//Run this function concurrently instead of making the HTTP request wait for it
 	go func() {

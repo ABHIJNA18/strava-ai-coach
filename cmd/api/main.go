@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/ABHIJNA18/strava-ai-coach/internal/auth"
 	"github.com/ABHIJNA18/strava-ai-coach/internal/coach"
@@ -33,6 +34,18 @@ func main() {
 		panic(err)
 	}
 	defer db.Close()
+
+	//========PORTS=================
+	//use PORT defined in env file for production, else fall back to localhost:8080 for development
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	grpcAddress := os.Getenv("PYTHON_GRPC_ADDRESS")
+	if grpcAddress == "" {
+		grpcAddress = "localhost:50051"
+	}
 
 	//========SESSIONS=================
 	//Create the session manager after creating the database connection
@@ -77,7 +90,7 @@ func main() {
 
 	// ============Connect to Python Coach Service====================
 
-	coachClient, coachConn, err := coach.NewClient("localhost:50051")
+	coachClient, coachConn, err := coach.NewClient(grpcAddress)
 	if err != nil {
 		panic(err)
 	}
@@ -113,6 +126,12 @@ func main() {
 
 	// ============WEBHOOK SERVICE====================
 
+	webhookSigningSecret := os.Getenv("STRAVA_WEBHOOK_SIGNING_SECRET")
+
+	if webhookSigningSecret == "" {
+		panic("STRAVA_WEBHOOK_SIGNING_SECRET is not set")
+	}
+
 	webhookVerifyToken := os.Getenv(
 		"STRAVA_WEBHOOK_VERIFY_TOKEN",
 	)
@@ -131,6 +150,7 @@ func main() {
 	webhookHandler := webhook.NewHandler(
 		webhookService,
 		webhookVerifyToken,
+		webhookSigningSecret,
 	)
 	//=============auth and activity handlers=========================
 
@@ -211,10 +231,26 @@ func main() {
 	http.Handle("/webhooks/strava", webhookHandler)
 
 	//==== START SERVER =====
+	/*
+		if err := http.ListenAndServe(":8080", nil); err != nil {
+		fmt.Println("HTTP server stopped:", err)
+		}*/
 
-	//verify server is running
-	fmt.Println("Server running on port 8080...")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	//replacing the above with explicit http server below
+	server := &http.Server{
+		Addr:              ":" + port,
+		Handler:           http.DefaultServeMux,
+		ReadHeaderTimeout: 5 * time.Second,
+		ReadTimeout:       15 * time.Second,
+		WriteTimeout:      60 * time.Second,
+		IdleTimeout:       60 * time.Second,
+		MaxHeaderBytes:    1 << 20,
+	}
+
+	fmt.Printf("Server running on port %s...\n", port)
+
+	if err := server.ListenAndServe(); err != nil &&
+		err != http.ErrServerClosed {
 		fmt.Println("HTTP server stopped:", err)
 	}
 
@@ -235,6 +271,6 @@ http.HandleFunc("/test-token", func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("Access Token Retrieved Successfully\n%s", accessToken)
+	fmt.Printf("Access Token Retrieved Successfully")
 })
 */

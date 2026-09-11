@@ -54,16 +54,8 @@ func expectCoachSession(
 	sessionID int64,
 	athleteID int64,
 ) {
-	now := time.Date(
-		2026,
-		8,
-		31,
-		10,
-		0,
-		0,
-		0,
-		time.UTC,
-	)
+	// Keep the fixture inside the session idle and absolute lifetimes.
+	now := time.Now().Add(-time.Hour)
 
 	selectPattern := `(?s)SELECT.*FROM sessions.*WHERE token_hash = \$1`
 

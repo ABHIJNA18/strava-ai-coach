@@ -57,16 +57,8 @@ func expectValidSession(
 ) {
 	selectPattern := `(?s)SELECT.*FROM sessions.*WHERE token_hash = \$1`
 
-	createdAt := time.Date(
-		2026,
-		8,
-		31,
-		10,
-		0,
-		0,
-		0,
-		time.UTC,
-	)
+	// Keep the fixture inside the session idle and absolute lifetimes.
+	createdAt := time.Now().Add(-time.Hour)
 
 	lastSeenAt := createdAt
 

@@ -114,7 +114,8 @@ func CallbackHandler(
 			http.Error(w, "failed to fetch athlete", http.StatusInternalServerError)
 			return
 		}
-		fmt.Printf("Athlete data fetched successfully %s, %s \n", athlete.Firstname, athlete.Lastname)
+		//fmt.Printf("Athlete data fetched successfully %s, %s \n", athlete.Firstname, athlete.Lastname)
+		fmt.Println("Athlete data fetched successfully")
 
 		// change from strava.Athlete to database.Athlete to store athlete in db
 		dbAthlete := database.Athlete{

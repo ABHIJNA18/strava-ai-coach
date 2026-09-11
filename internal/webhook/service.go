@@ -102,7 +102,7 @@ func (s *WebhookService) processActivityDelete(event Event) {
 		return
 	}
 
-	err = database.DeleteActivityByStravaID(
+	deleted, err := database.DeleteActivityByStravaID(
 		s.db,
 		localAthleteID,
 		event.ObjectID,
@@ -112,6 +112,15 @@ func (s *WebhookService) processActivityDelete(event Event) {
 			"Failed to delete activity %d: %v",
 			event.ObjectID,
 			err,
+		)
+		return
+	}
+
+	if !deleted {
+		log.Printf(
+			"Activity %d was not found for local athlete %d",
+			event.ObjectID,
+			localAthleteID,
 		)
 		return
 	}

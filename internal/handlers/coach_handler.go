@@ -1,5 +1,5 @@
-// protobuf still returns the structured coaching JSON as a string. This handler converts that string into a real JSON object for the browser.
 package handlers
+// protobuf still returns the structured coaching JSON as a string. This handler converts that string into a real JSON object for the browser.
 
 import (
 	"context"
@@ -64,15 +64,21 @@ func (h *CoachHandler) GetReport(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("coach report request started:", r.Method, r.URL.Path, time.Now().UnixNano())
 	summary, err := h.coachService.AnalyzeRecentRuns(r.Context(), athleteID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		fmt.Println("Failed to generate report:", err)
+		http.Error(w, "failed to generate report", http.StatusInternalServerError)
 		return
 	}
 	fmt.Println("coach report request finished:", time.Now().UnixNano())
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(coachReportResponse{
-		Summary: summary,
-	})
+
+	if err := json.NewEncoder(w).Encode(
+		coachReportResponse{
+			Summary: summary,
+		},
+	); err != nil {
+		fmt.Println("Failed to encode coaching report response:", err)
+	}
 }
 
 // GetCoaching receives a goal and returns structured personalized coaching.
@@ -101,6 +107,25 @@ func (h *CoachHandler) GetCoaching(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// prevents oversized request bodies and excessively large prompts.
+	if !strings.HasPrefix(
+		r.Header.Get("Content-Type"),
+		"application/json",
+	) {
+		http.Error(
+			w,
+			"Content-Type must be application/json",
+			http.StatusUnsupportedMediaType,
+		)
+		return
+	}
+
+	r.Body = http.MaxBytesReader(
+		w,
+		r.Body,
+		32<<10,
+	)
+
 	var request coachingRequest
 
 	if err := json.NewDecoder(
@@ -118,10 +143,21 @@ func (h *CoachHandler) GetCoaching(w http.ResponseWriter, r *http.Request) {
 		request.Goal,
 	)
 
+	//check if goal is empty
 	if request.Goal == "" {
 		http.Error(
 			w,
 			"goal cannot be empty",
+			http.StatusBadRequest,
+		)
+		return
+	}
+
+	//check if goal is too long
+	if len([]rune(request.Goal)) > 2000 {
+		http.Error(
+			w,
+			"goal must be 2000 characters or fewer",
 			http.StatusBadRequest,
 		)
 		return

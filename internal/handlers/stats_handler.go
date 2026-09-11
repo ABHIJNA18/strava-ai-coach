@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -57,11 +58,8 @@ func (h *StatsHandler) GetTopSport(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if err != nil {
-		http.Error(
-			w,
-			err.Error(),
-			http.StatusInternalServerError,
-		)
+		fmt.Println("Failed to load top sport:", err)
+		http.Error(w, "failed to load top sport", http.StatusInternalServerError)
 		return
 	}
 
@@ -76,11 +74,8 @@ func (h *StatsHandler) GetTopSport(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if err != nil {
-		http.Error(
-			w,
-			err.Error(),
-			http.StatusInternalServerError,
-		)
+		fmt.Println("Failed to encode top sport response:", err)
+		http.Error(w, "failed to encode top sport response", http.StatusInternalServerError)
 		return
 	}
 

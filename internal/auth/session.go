@@ -9,12 +9,18 @@ import (
 	"encoding/hex"
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/ABHIJNA18/strava-ai-coach/internal/database"
 )
 
 var ErrInvalidSession = errors.New(
 	"invalid application session",
+)
+
+const (
+	sessionAbsoluteLifetime = 30 * 24 * time.Hour
+	sessionIdleTimeout      = 7 * 24 * time.Hour
 )
 
 type SessionManager struct {
@@ -97,6 +103,17 @@ func (m *SessionManager) LoadSession(
 		return nil, ErrInvalidSession
 	}
 
+	//check session expiration based on absolute lifetime and idle timeout
+	now := time.Now()
+
+	if now.Sub(session.CreatedAt) > sessionAbsoluteLifetime {
+		return nil, ErrInvalidSession
+	}
+
+	if now.Sub(session.LastSeenAt) > sessionIdleTimeout {
+		return nil, ErrInvalidSession
+	}
+
 	//update the last seen time of the session in database
 	err = database.TouchSession(
 		m.db,
@@ -130,7 +147,7 @@ func (m *SessionManager) RevokeSession(
 	)
 }
 
-//Setting the cookie which is sent to the client browser, which is the raw token
+// Setting the cookie which is sent to the client browser, which is the raw token
 func (m *SessionManager) SetCookie(
 	w http.ResponseWriter,
 	rawToken string,

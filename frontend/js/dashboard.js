@@ -133,12 +133,30 @@ topSportButton.addEventListener("click", async function(){
 
         const activityCount = sports[0].count;
 
-        topSportBox.innerHTML =
+        // Build the message with DOM nodes instead of innerHTML. This keeps
+        // API/database values as text while preserving the bold sport name.
+        topSportBox.replaceChildren();
+
+        const intro = document.createElement("span");
+        intro.textContent =
             `Your top sport${sports.length > 1 ? "s" : ""} ` +
-            `in the last 30 days ${sports.length > 1 ? "are..." : "is..."} ` +
-            `<br><strong>${sportText}</strong></br>` +
-            `You logged <strong>${activityCount} activities `+
-            `${sports.length >1 ? "each." : "."}` ;
+            `in the last 30 days ${sports.length > 1 ? "are" : "is"} `;
+
+        const sportElement = document.createElement("strong");
+        sportElement.textContent = sportText;
+
+        const activityText = document.createElement("span");
+        activityText.textContent =
+            `You logged ${activityCount} activities` +
+            `${sports.length > 1 ? " each." : "."}`;
+
+        topSportBox.append(
+            intro,
+            document.createElement("br"),
+            sportElement,
+            document.createElement("br"),
+            activityText,
+        );
 
     } catch(error){
 

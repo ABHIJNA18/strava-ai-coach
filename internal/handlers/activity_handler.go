@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/ABHIJNA18/strava-ai-coach/internal/database"
@@ -39,12 +40,8 @@ func (h *ActivityHandler) GetActivities(w http.ResponseWriter, r *http.Request) 
 
 	activities, err := database.GetActivitiesByAthleteID(h.DB, athleteID)
 	if err != nil {
-
-		http.Error(
-			w,
-			err.Error(),
-			http.StatusInternalServerError,
-		)
+		fmt.Println("Failed to load activities:", err)
+		http.Error(w, "failed to load activities", http.StatusInternalServerError)
 		return
 	}
 
@@ -52,11 +49,8 @@ func (h *ActivityHandler) GetActivities(w http.ResponseWriter, r *http.Request) 
 	err = json.NewEncoder(w).Encode(activities)
 
 	if err != nil {
-		http.Error(
-			w,
-			err.Error(),
-			http.StatusInternalServerError,
-		)
+		fmt.Println("Failed to encode activities response:", err)
+		http.Error(w, "failed to encode activities response", http.StatusInternalServerError)
 		return
 	}
 
@@ -83,22 +77,16 @@ func (h *ActivityHandler) GetStats(
 	stats, err := database.GetActivityStats(h.DB, athleteID)
 
 	if err != nil {
-		http.Error(
-			w,
-			err.Error(),
-			http.StatusInternalServerError,
-		)
+		fmt.Println("Failed to load activity stats:", err)
+		http.Error(w, "failed to load activity statistics", http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(stats)
 	if err != nil {
-		http.Error(
-			w,
-			err.Error(),
-			http.StatusInternalServerError,
-		)
+		fmt.Println("Failed to encode activity stats response:", err)
+		http.Error(w, "failed to encode activity statistics", http.StatusInternalServerError)
 		return
 	}
 }
@@ -119,22 +107,16 @@ func (h *ActivityHandler) GetRuns(w http.ResponseWriter, r *http.Request) {
 
 	runs, err := database.GetActivitiesByType(h.DB, athleteID, "Run")
 	if err != nil {
-		http.Error(
-			w,
-			err.Error(),
-			http.StatusInternalServerError,
-		)
+		fmt.Println("Failed to load runs:", err)
+		http.Error(w, "failed to load runs", http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(runs)
 	if err != nil {
-		http.Error(
-			w,
-			err.Error(),
-			http.StatusInternalServerError,
-		)
+		fmt.Println("Failed to encode runs response:", err)
+		http.Error(w, "failed to encode runs response", http.StatusInternalServerError)
 		return
 	}
 }
@@ -155,7 +137,7 @@ func (h *ActivityHandler) GetHikes(
 		)
 		return
 	}
-	
+
 	hikes, err := database.GetActivitiesByType(
 		h.DB,
 		athleteID,
@@ -163,11 +145,8 @@ func (h *ActivityHandler) GetHikes(
 	)
 
 	if err != nil {
-		http.Error(
-			w,
-			err.Error(),
-			http.StatusInternalServerError,
-		)
+		fmt.Println("Failed to load hikes:", err)
+		http.Error(w, "failed to load hikes", http.StatusInternalServerError)
 		return
 	}
 
@@ -181,11 +160,8 @@ func (h *ActivityHandler) GetHikes(
 	)
 
 	if err != nil {
-		http.Error(
-			w,
-			err.Error(),
-			http.StatusInternalServerError,
-		)
+		fmt.Println("Failed to encode hikes response:", err)
+		http.Error(w, "failed to encode hikes response", http.StatusInternalServerError)
 		return
 	}
 }
@@ -214,11 +190,8 @@ func (h *ActivityHandler) GetWeightTraining(
 	)
 
 	if err != nil {
-		http.Error(
-			w,
-			err.Error(),
-			http.StatusInternalServerError,
-		)
+		fmt.Println("Failed to load weight-training activities:", err)
+		http.Error(w, "failed to load weight-training activities", http.StatusInternalServerError)
 		return
 	}
 
@@ -232,11 +205,8 @@ func (h *ActivityHandler) GetWeightTraining(
 	)
 
 	if err != nil {
-		http.Error(
-			w,
-			err.Error(),
-			http.StatusInternalServerError,
-		)
+		fmt.Println("Failed to encode weight-training response:", err)
+		http.Error(w, "failed to encode weight-training response", http.StatusInternalServerError)
 		return
 	}
 }
@@ -267,11 +237,8 @@ func (h *ActivityHandler) GetRecentActivities(
 	)
 
 	if err != nil {
-		http.Error(
-			w,
-			err.Error(),
-			http.StatusInternalServerError,
-		)
+		fmt.Println("Failed to load recent activities:", err)
+		http.Error(w, "failed to load recent activities", http.StatusInternalServerError)
 		return
 	}
 
@@ -282,11 +249,8 @@ func (h *ActivityHandler) GetRecentActivities(
 
 	err = json.NewEncoder(w).Encode(runs)
 	if err != nil {
-		http.Error(
-			w,
-			err.Error(),
-			http.StatusInternalServerError,
-		)
+		fmt.Println("Failed to encode recent activities response:", err)
+		http.Error(w, "failed to encode recent activities response", http.StatusInternalServerError)
 		return
 	}
 }
@@ -316,11 +280,8 @@ func (h *ActivityHandler) GetRecentRuns(
 	)
 
 	if err != nil {
-		http.Error(
-			w,
-			err.Error(),
-			http.StatusInternalServerError,
-		)
+		fmt.Println("Failed to load recent runs:", err)
+		http.Error(w, "failed to load recent runs", http.StatusInternalServerError)
 		return
 	}
 
@@ -331,11 +292,8 @@ func (h *ActivityHandler) GetRecentRuns(
 
 	err = json.NewEncoder(w).Encode(runs)
 	if err != nil {
-		http.Error(
-			w,
-			err.Error(),
-			http.StatusInternalServerError,
-		)
+		fmt.Println("Failed to encode recent runs response:", err)
+		http.Error(w, "failed to encode recent runs response", http.StatusInternalServerError)
 		return
 	}
 }
@@ -365,11 +323,8 @@ func (h *ActivityHandler) GetRecentHikes(
 	)
 
 	if err != nil {
-		http.Error(
-			w,
-			err.Error(),
-			http.StatusInternalServerError,
-		)
+		fmt.Println("Failed to load recent hikes:", err)
+		http.Error(w, "failed to load recent hikes", http.StatusInternalServerError)
 		return
 	}
 
@@ -380,11 +335,8 @@ func (h *ActivityHandler) GetRecentHikes(
 
 	err = json.NewEncoder(w).Encode(hikes)
 	if err != nil {
-		http.Error(
-			w,
-			err.Error(),
-			http.StatusInternalServerError,
-		)
+		fmt.Println("Failed to encode recent hikes response:", err)
+		http.Error(w, "failed to encode recent hikes response", http.StatusInternalServerError)
 		return
 	}
 }
@@ -414,11 +366,8 @@ func (h *ActivityHandler) GetRecentWeightTraining(
 	)
 
 	if err != nil {
-		http.Error(
-			w,
-			err.Error(),
-			http.StatusInternalServerError,
-		)
+		fmt.Println("Failed to load recent weight-training activities:", err)
+		http.Error(w, "failed to load recent weight-training activities", http.StatusInternalServerError)
 		return
 	}
 
@@ -429,11 +378,8 @@ func (h *ActivityHandler) GetRecentWeightTraining(
 
 	err = json.NewEncoder(w).Encode(workouts)
 	if err != nil {
-		http.Error(
-			w,
-			err.Error(),
-			http.StatusInternalServerError,
-		)
+		fmt.Println("Failed to encode recent weight-training response:", err)
+		http.Error(w, "failed to encode recent weight-training response", http.StatusInternalServerError)
 		return
 	}
 }
