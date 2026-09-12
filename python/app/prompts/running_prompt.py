@@ -3,7 +3,7 @@
 
 from datetime import datetime
 
-from python.app.analytics.models import RunningAnalytics
+from app.analytics.models import RunningAnalytics
 
 
 def _format_pace(seconds_per_km):

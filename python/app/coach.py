@@ -1,20 +1,20 @@
 # This file coordinates the 30-day summary and personalized coaching pipelines.
 
-from python.app.ai.openai_client import (
+from app.ai.openai_client import (
     generate_structured_summary,
     generate_summary,
 )
-from python.app.analytics.orchestrator import (
+from app.analytics.orchestrator import (
     calculate_coaching_analytics,
     calculate_running_analytics,
 )
-from python.app.knowledge.running.selector import (
+from app.knowledge.running.selector import (
     select_knowledge,
 )
-from python.app.prompts.coaching_prompt import (
+from app.prompts.coaching_prompt import (
     build_coaching_prompt,
 )
-from python.app.prompts.running_prompt import (
+from app.prompts.running_prompt import (
     build_running_prompt,
 )
 

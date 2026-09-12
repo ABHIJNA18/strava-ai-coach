@@ -8,10 +8,10 @@ import os
 
 from concurrent import futures
 
-from python.generated import coach_pb2
-from python.generated import coach_pb2_grpc
-from python.app.config import validate_required_configuration
-from python.app.coach import (
+from generated import coach_pb2
+from generated import coach_pb2_grpc
+from app.config import validate_required_configuration
+from app.coach import (
     generate_coaching_summary,
     generate_personalized_coaching,
 )

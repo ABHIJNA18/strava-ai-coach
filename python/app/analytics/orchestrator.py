@@ -1,13 +1,13 @@
 # This file combines the analytics needed by 30 Days run summary and coaching pipeline.
 
-from python.app.analytics.models import (
+from app.analytics.models import (
     CoachingAnalytics,
     RunningAnalytics,
 )
-from python.app.analytics.running import (
+from app.analytics.running import (
     calculate_run_summary,
 )
-from python.app.analytics.weekly import (
+from app.analytics.weekly import (
     calculate_weekly_running_analytics,
 )
 

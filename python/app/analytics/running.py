@@ -1,6 +1,6 @@
 # This file calculates overall running analytics from activity data.
 
-from python.app.analytics.models import RunSummary
+from app.analytics.models import RunSummary
 
 
 def _runs(activities):

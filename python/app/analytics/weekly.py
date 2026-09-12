@@ -3,7 +3,7 @@
 from collections import defaultdict
 from datetime import date, datetime, timedelta
 
-from python.app.analytics.models import (
+from app.analytics.models import (
     WeeklyRunAnalytics,
     WeeklyRunningAnalytics,
 )
