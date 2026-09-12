@@ -1,6 +1,6 @@
 # This file builds the personalized coaching prompt from analytics and knowledge.
 
-from python.app.analytics.models import (
+from app.analytics.models import (
     CoachingAnalytics,
 )
 

@@ -2,7 +2,7 @@
 
 from types import SimpleNamespace
 
-from python.app.analytics.weekly import (
+from app.analytics.weekly import (
     calculate_weekly_running_analytics,
 )
 
