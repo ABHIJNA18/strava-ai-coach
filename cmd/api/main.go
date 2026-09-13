@@ -127,10 +127,9 @@ func main() {
 	// ============WEBHOOK SERVICE====================
 
 	webhookSigningSecret := os.Getenv("STRAVA_WEBHOOK_SIGNING_SECRET")
-
-	if webhookSigningSecret == "" {
-		panic("STRAVA_WEBHOOK_SIGNING_SECRET is not set")
-	}
+	// Signature verification is currently optional because Strava's webhook
+	// signature support is not reliably verifiable. The value is retained for
+	// future re-enablement without blocking webhook startup today.
 
 	webhookVerifyToken := os.Getenv(
 		"STRAVA_WEBHOOK_VERIFY_TOKEN",
