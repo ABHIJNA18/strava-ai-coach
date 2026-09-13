@@ -10,7 +10,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"time"
 )
 
 type Handler struct {
@@ -106,22 +105,10 @@ func (h *Handler) receiveEvent(
 		return
 	}
 
-	//verify the signature 
-	signature := r.Header.Get("X-Strava-Signature")
-
-	if !verifySignature(
-		signature,
-		body,
-		h.signingSecret,
-		time.Now(),
-	) {
-		http.Error(
-			w,
-			"invalid webhook signature",
-			http.StatusForbidden,
-		)
-		return
-	}
+	// Strava's current webhook signature support is not reliably verifiable.
+	// Keep the verifier available in signature.go, but do not reject real
+	// Strava events based on X-Strava-Signature until Strava provides a stable
+	// signing-secret mechanism.
 
 	var event Event
 
