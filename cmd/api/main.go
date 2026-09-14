@@ -20,13 +20,14 @@ import (
 
 func main() {
 
-	// Load environment variables from .env file
-	err := godotenv.Load()
-	if err != nil {
+	// Load environment variables from .env file, for local development
+	//ignoring thr error for production
+	_ = godotenv.Load()
+	/*if err != nil {
 		panic("Error loading .env file")
 	} else {
 		fmt.Println(".env file loaded successfully")
-	}
+	}*/
 
 	//========create connect to databse==============
 	db, err := database.NewPostgresConnection()
