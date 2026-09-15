@@ -1,158 +1,60 @@
-# 🏃 Strava AI Coach
+<h1>
+  <img src="docs/screenshots/striveAI.png" width="45" align="center">
+  StriveAI
+</h1>
 
-An AI-powered running coach built with Go, Python, gRPC, PostgreSQL and OpenAI.
+> An AI-powered platform which turns your Strava training history into personalized performance insights and actionable training recommendations.
 
-The application connects to a user's Strava account, stores their activities, analyzes their recent running history, and generates personalized coaching summaries using GPT.
+**🚀 Link:** https://go-service-production-eace.up.railway.app
 
----
+StriveAI connects to Strava, analyzes recent training, and uses AI to provide personalized insights and training recommendations.
 
-## Features
+> **Current status:** First production deployment. Core functionality is live and working end-to-end; I'm continuing to improve the training recommendation logic, user experience, and reliability.
 
-### ✅ Strava OAuth
+## What it does
 
-- Login securely with Strava
-- Store athlete information
-- Store OAuth tokens
-- Automatically refresh expired access tokens
+### 📊 Training Summary
+Provides a monthly overview of training patterns, including volume, pace, heart rate, consistency, and other key metrics. **Currently based on running activities.**
 
----
 
-### ✅ Activity Synchronization
+### 🏅 Top Sport
+Identifies your most frequently practiced sport across **all recorded activities**, giving you a quick view of where most of your training is going.
 
-- Fetch activities from Strava
-- Store activities in PostgreSQL
-- Support running, hiking and weight training activities
+![Top Sport](docs/screenshots/summary_top_sport.png)
 
----
+### 🤖 Personalized Training Recommendations
+Analyzes your recent **running training** and goals to generate personalized recommendations around training structure, pacing, recovery, and progression
 
-### ✅ AI Coaching Pipeline
+![Training Recommendations](docs/screenshots/coach.png)
 
-Go Backend
+![Training Recommendations](docs/screenshots/ai_analysis.png)
 
-↓
+### 📋 Recent Activities
+Shows your recent activities across **all supported sports**, including activity type, distance, duration, pace, heart rate, and other available metrics.
 
-PostgreSQL
+![Recent Activities](docs/screenshots/recent_activities.png)
 
-↓
 
-gRPC
+## How it works
 
-↓
+StriveAI connects to Strava through OAuth, stores activity data in PostgreSQL, calculates training metrics in a Go backend, and uses a Python-based training recommendation service to generate AI insights.
 
-Python Analytics Engine
 
-↓
+## Architecture
 
-OpenAI GPT
-
-↓
-
-AI Coaching Summary
-
-The backend fetches the athlete's running activities from the last 30 days and sends them to a Python coaching service over gRPC.
-
-The Python service:
-
-- Calculates structured running analytics
-- Builds an LLM prompt
-- Calls OpenAI
-- Returns a personalized coaching summary
-
----
-
-## Running Analytics
-
-Current analytics include:
-
-- Number of runs
-- Total running distance
-- Average run distance
-- Total moving time
-- Average run duration
-- Average pace
-- Average heart rate
-- Average cadence
-- Total elevation gain
-- Fastest run
-- Longest run
-
-The analytics are calculated deterministically in Python before being sent to the LLM.
-
-The LLM is responsible only for interpreting the analytics and generating coaching advice.
-
----
-
-## Tech Stack
-
-### Backend
-
-- Go
-- Python
-- gRPC
-- Protocol Buffers
-- PostgreSQL
-- OpenAI API
-
-### APIs
-
-- Strava API
-
----
-
-## Project Structure
-
-```
-cmd/
-    api/
-
-internal/
-    handlers/
-    database/
-    strava/
-    coach/
-
-proto/
-
-python/
-    app/
-        analytics/
-        prompts/
-        ai/
-        server.py
+```text
+Frontend
+   │
+   ▼
+Go Backend ───────► PostgreSQL
+   │
+   │ gRPC
+   ▼
+Python Service
+   │
+   ▼
+OpenAI
 ```
 
----
-
-## Current Status
-
-Backend is complete for the first MVP.
-
-Implemented:
-
-- Strava OAuth
-- PostgreSQL persistence
-- Activity synchronization
-- Go ↔ Python communication using gRPC
-- Analytics engine
-- GPT-generated coaching summaries
-
----
-
-## Next Milestones
-
-### Frontend
-
-Build a web dashboard where users can:
-
-- Login with Strava
-- View recent activities
-- Generate a 30-day AI coaching summary
-
-### AI Chat
-
-Allow users to ask questions such as:
-
-- How many kilometers did I run this month?
-- What was my fastest run?
-- How has my pace changed?
-
+The application is currently in its first production deployment. The core functionality is working end-to-end, and I am continuing to improve the training recommendation logic, user experience, and overall reliability.
+Current AI analysis and training recommendations are focused on running activities, while activity history and sport-level statistics include all recorded activities
