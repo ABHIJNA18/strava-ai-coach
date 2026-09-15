@@ -10,7 +10,10 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Strava AI Coach - Dashboard</title>
+    <title>StriveAI - Dashboard</title>
+
+    <link rel="icon" type="image/png" href="striveai.png?v=1">
+    <link rel="apple-touch-icon" href="striveai.png?v=1">
 
     <link rel="stylesheet" href="css/styles.css">
 
@@ -22,11 +25,11 @@
 
         <header class="dashboard-header">
 
-            <div>
-                <h1>🏃 Strava AI Coach</h1>
+            <div class="dashboard-brand">
+                <h1>StriveAI 🏃</h1>
 
                 <p>
-                    Your running activity and AI-powered coaching insights.
+                    Track your Strava activities and get running-focused insights.
                 </p>
             </div>
 
@@ -62,18 +65,18 @@
 
             <!-- AI SUMMARY -->
             <section class="ai-coach-card">
-                <h2>AI Summary 🎯</h2>
+                <h2>30-Day Running Summary 🎯</h2>
 
                 <p>
-                    Get an AI-powered analysis of your running activity over the last 30 days.
+                    Get an AI-powered overview of your running over the last 30 days.
                 </p>
 
                 <button id="summary-button">
-                    Generate 30-Day Run Summary ✨
+                    Generate Running Summary ✨
                 </button>
 
                 <div id="summary-box">
-                    Your AI summary will appear here.
+                    Your running summary will appear here.
                 </div>
             </section>
 
@@ -98,28 +101,27 @@
         </div>
 
 
-        <!-- PERSONALIZED AI COACHING -->
+        <!-- RUNNING TRAINING RECOMMENDATIONS -->
         <section class="ai-coach-card">
 
-            <h2>Personalized AI Coach 🤝</h2>
+            <h2>Training Recommendations 🏃</h2>
 
             <p>
-                Tell your AI Coach what you're working toward.
-                The more specific you are, the more personalized the coaching will be.
+                Tell StriveAI your running goals for more personalized training recommendations.
             </p>
 
             <textarea
                 id="coaching-goal"
                 rows="3"
-                placeholder="I want to run 10K comfortably within the next 2 months at 7:00 min/km. I currently run around 5K at roughly 7:45 min/km"
+                placeholder="I want to run 10K comfortably within the next 2 months at 6:00 min/km. I currently run 5K at roughly 7:45 min/km pace"
             ></textarea>
 
             <button id="coaching-button">
-                Get AI Coaching ✨
+                Get Training Recommendations ✨
             </button>
 
             <div id="coaching-box">
-                Your personalized coaching will appear here.
+                Your personalized training recommendations will appear here.
             </div>
 
         </section>
