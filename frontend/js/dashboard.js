@@ -60,7 +60,11 @@ const summaryBox = document.getElementById("summary-box");
 
 summaryButton.addEventListener("click", async function () {
 
-    summaryBox.textContent = "💭 Generating your 30-day summary...";
+    summaryBox.innerHTML =
+        '<span class="loading-state">' +
+        '<span class="loading-spinner" aria-hidden="true"></span>' +
+        'Generating your 30-day summary...' +
+        '</span>';
 
     try {
 
@@ -184,8 +188,11 @@ coachingButton.addEventListener("click", async function () {
     }
 
     coachingButton.disabled = true;
-    coachingBox.textContent =
-        "🤔Thinking about your goal and recent running data...";
+    coachingBox.innerHTML =
+        '<span class="loading-state">' +
+        '<span class="loading-spinner" aria-hidden="true"></span>' +
+        'Generating training recommendations...' +
+        '</span>';
 
     try {
         const response = await fetch("/coach/coaching", {

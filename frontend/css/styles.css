@@ -175,6 +175,28 @@ button:hover {
     border-radius: 8px;
 
 }
+
+.loading-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 3px solid rgba(252, 82, 0, 0.22);
+    border-top-color: #fc5200;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
 /* ===========================
    TOP SPORT SECTION
 =========================== */
@@ -443,4 +465,329 @@ textarea::placeholder {
             repeat(2, 1fr);
     }
 
+}
+
+/* ===========================
+   LANDING PAGE
+=========================== */
+
+html {
+    scroll-behavior: smooth;
+}
+
+.landing-page {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 85% 12%, rgba(255, 210, 172, 0.35), transparent 28%),
+        linear-gradient(135deg, #fff8f1 0%, #fffdfb 52%, #f8f1ff 100%);
+}
+
+.landing-shell {
+    width: min(1180px, calc(100% - 48px));
+    margin: 0 auto;
+    padding: 24px 0 48px;
+}
+
+.landing-page .landing-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin: 0 0 22px;
+    text-align: left;
+}
+
+.landing-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #fc5200;
+    font-size: 24px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.landing-brand img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.how-it-works-link,
+.hero-secondary-action {
+    color: #374151;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(55, 65, 81, 0.12);
+    border-radius: 999px;
+    padding: 11px 20px;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 5px 16px rgba(91, 62, 42, 0.08);
+    transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.how-it-works-link:hover,
+.hero-secondary-action:hover {
+    color: #fc5200;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(91, 62, 42, 0.12);
+}
+
+.landing-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(420px, 0.95fr);
+    align-items: center;
+    gap: 34px;
+    padding: 58px 62px;
+    border-radius: 28px;
+    background:
+        linear-gradient(115deg, #fff0e1 0%, #fffaf6 55%, #ffffff 100%);
+    border: 1px solid rgba(252, 82, 0, 0.08);
+    box-shadow: 0 22px 55px rgba(110, 65, 36, 0.12);
+}
+
+.hero-copy {
+    max-width: 760px;
+}
+
+.hero-eyebrow,
+.section-kicker {
+    margin: 0 0 12px;
+    color: #fc5200;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+}
+
+.hero-copy h1 {
+    margin: 0;
+    max-width: 650px;
+    color: #1f2937;
+    font-size: clamp(42px, 5vw, 72px);
+    line-height: 0.98;
+    letter-spacing: -0.055em;
+}
+
+.hero-description {
+    max-width: 570px;
+    margin: 24px 0 0;
+    color: #5b6472;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 30px;
+}
+
+.landing-page #login-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    background: #fc5200;
+    padding: 14px 22px;
+    border-radius: 999px;
+    font-size: 16px;
+    font-weight: 700;
+    box-shadow: 0 10px 22px rgba(252, 82, 0, 0.22);
+}
+
+.landing-page #login-button:hover {
+    background: #dc4500;
+}
+
+.how-it-works-section,
+.gallery-section {
+    scroll-margin-top: 24px;
+    padding: 86px 8px 12px;
+}
+
+.landing-features {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin: 0;
+    align-self: start;
+    align-content: start;
+}
+
+.landing-feature-card {
+    height: 160px;
+    padding: 20px;
+    align-self: start;
+    box-sizing: border-box;
+    border: 1px solid rgba(252, 82, 0, 0.12);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 10px 24px rgba(87, 62, 47, 0.07);
+}
+
+.landing-feature-card h2 {
+    margin: 0 0 8px;
+    color: #d7784d;
+    font-size: 16px;
+    line-height: 1.2;
+}
+
+.landing-feature-card p {
+    margin: 0;
+    color: #667085;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.section-heading {
+    max-width: 680px;
+    margin: 0 auto 34px;
+    text-align: center;
+}
+
+.section-heading h2 {
+    margin: 0;
+    color: #1f2937;
+    font-size: clamp(30px, 4vw, 48px);
+    letter-spacing: -0.045em;
+}
+
+.section-heading > p:last-child {
+    margin: 14px auto 0;
+    color: #667085;
+    font-size: 16px;
+    line-height: 1.55;
+}
+
+.how-it-works-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.how-it-works-step {
+    min-height: 172px;
+    padding: 24px;
+    border: 1px solid rgba(252, 82, 0, 0.1);
+    border-radius: 18px;
+    background: #fff0e1;
+    box-shadow: 0 12px 28px rgba(87, 62, 47, 0.08);
+}
+
+.step-number {
+    color: #fc5200;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+}
+
+.how-it-works-step h3 {
+    margin: 18px 0 8px;
+    color: #1f2937;
+    font-size: 20px;
+}
+
+.how-it-works-step p {
+    margin: 0;
+    color: #667085;
+    line-height: 1.55;
+}
+
+.gallery-section {
+    padding-top: 72px;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    align-items: start;
+}
+
+.gallery-card {
+    overflow: hidden;
+    margin: 0;
+    border: 1px solid rgba(252, 82, 0, 0.12);
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 12px 28px rgba(87, 62, 47, 0.09);
+}
+
+/* Keep the two top gallery cards aligned while preserving natural image sizes. */
+.gallery-card:nth-child(-n + 2) {
+    align-self: stretch;
+}
+
+.gallery-card img {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    object-position: center;
+    background: #fff8f2;
+}
+
+.gallery-card figcaption {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 16px 20px 18px;
+    background: #ffd5bd;
+}
+
+.gallery-card figcaption strong {
+    color: #7a2f13;
+    font-size: 17px;
+}
+
+.gallery-card figcaption span {
+    color: #8b553e;
+    font-size: 14px;
+}
+
+.landing-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 60px;
+    padding: 22px 8px 0;
+    border-top: 1px solid rgba(100, 72, 50, 0.12);
+    color: #667085;
+    font-size: 13px;
+}
+
+.landing-footer span:first-child {
+    color: #fc5200;
+    font-weight: 800;
+}
+
+/* ===========================
+   DASHBOARD VISUAL POLISH
+=========================== */
+
+.dashboard-page {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 92% 5%, rgba(255, 211, 177, 0.42), transparent 24%),
+        linear-gradient(135deg, #fff8f1 0%, #f9f6ff 52%, #eef7ff 100%);
+}
+
+.dashboard-page .card,
+.dashboard-page .top-sport-card,
+.dashboard-page .ai-coach-card {
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 12px 30px rgba(62, 52, 46, 0.08);
+}
+
+.dashboard-page button {
+    box-shadow: 0 7px 16px rgba(252, 82, 0, 0.14);
+}
+
+.dashboard-page #summary-box,
+.dashboard-page #top-sport-section,
+.dashboard-page #coaching-box,
+.dashboard-page #activities-footer {
+    background: #fffaf7;
+    border: 1px solid rgba(252, 82, 0, 0.06);
 }
