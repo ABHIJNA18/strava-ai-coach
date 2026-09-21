@@ -9,7 +9,7 @@
 
 ## Demo
 
-[![Watch the StriveAI demo](docs/screenshots/demo-thumbnail.png)](https://www.loom.com/share/860ab0f7eb234b64826d2b0e83915098)
+[![Watch the StriveAI demo](docs/screenshots/demo-thumbnail.png)](https://www.loom.com/share/6de1a04507214bc4b6a99410c8842e22)
 
 Click the image above to watch the full walkthrough on Loom.
 
