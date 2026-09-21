@@ -7,6 +7,14 @@
 
 **🚀 Link:** https://go-service-production-eace.up.railway.app
 
+## Demo
+
+[![Watch the StriveAI demo](docs/screenshots/demo-thumbnail.png)](https://www.loom.com/share/860ab0f7eb234b64826d2b0e83915098)
+
+Click the image above to watch the full walkthrough on Loom.
+
+> **Access note:** This project currently supports up to 10 authorized users, in line with the current access restrictions for the Strava application.
+
 StriveAI connects to Strava, analyzes recent training, and uses AI to provide personalized insights and training recommendations.
 
 > **Current status:** First production deployment. Core functionality is live and working end-to-end; I'm continuing to improve the training recommendation logic, user experience, and reliability.

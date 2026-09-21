@@ -2,57 +2,153 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>StriveAI - Login</title>
+    <title>StriveAI - Running insights for every run</title>
 
     <link rel="icon" type="image/png" href="striveAI.png?v=1">
     <link rel="apple-touch-icon" href="striveAI.png?v=1">
-
     <link rel="stylesheet" href="css/styles.css">
-
 </head>
 
-<body>
+<body class="landing-page">
+    <main class="landing-shell">
+        <nav class="landing-nav" aria-label="Main navigation">
+            <a class="landing-brand" href="/" aria-label="StriveAI home">
+                <img src="striveAI.png" alt="" aria-hidden="true">
+                <span>StriveAI</span>
+            </a>
 
-    <main class="container">
+            <a class="how-it-works-link" href="#how-it-works">
+                How it works
+            </a>
+        </nav>
 
-        <header>
+        <section class="landing-hero" aria-labelledby="landing-title">
+            <div class="hero-copy">
+                <p class="hero-eyebrow">RUN WITH MORE CLARITY</p>
+                <h1 id="landing-title">
+                    Turn Your Strava<br>
+                    data into smarter<br>
+                    training.
+                </h1>
+                <p class="hero-description">
+                    StriveAI brings your running activity, performance patterns,
+                    and practical AI training recommendations together in one place.
+                </p>
 
-            <h1>StriveAI 🏃</h1>
+                <div class="hero-actions">
+                    <button id="login-button" type="button">
+                        Connect with Strava <span aria-hidden="true">→</span>
+                    </button>
+                    <a class="hero-secondary-action" href="#gallery">
+                        StriveAI in action
+                    </a>
+                </div>
+            </div>
 
-            <p>
-                Connect your Strava account and receive
-                AI-powered running insights.
-            </p>
+            <div class="landing-features" aria-label="StriveAI features">
+                <article class="landing-feature-card">
+                    <h2>30-day running overview</h2>
+                    <p>See your recent running volume, pace, heart rate, and elevation in one place.</p>
+                </article>
 
-        </header>
+                <article class="landing-feature-card">
+                    <h2>Top sport of the month</h2>
+                    <p>Quickly discover which activity has been part of your training most often.</p>
+                </article>
 
-        <section class="card login-card">
+                <article class="landing-feature-card">
+                    <h2>Smarter training with AI</h2>
+                    <p>Get running-focused summaries and recommendations shaped around your goals.</p>
+                </article>
 
-            <h2>Connect your Strava account</h2>
-
-            <p>
-                Login with Strava to view your activities
-                and receive personalized training recommendations.
-            </p>
-
-            <button id="login-button">
-                Login with Strava
-            </button>
-
+                <article class="landing-feature-card">
+                    <h2>Recent Strava activities</h2>
+                    <p>Keep your latest Strava activities easy to scan and understand.</p>
+                </article>
+            </div>
         </section>
 
+        <section id="how-it-works" class="how-it-works-section" aria-labelledby="how-it-works-title">
+            <div class="section-heading">
+                <p class="section-kicker">HOW IT WORKS</p>
+                <h2 id="how-it-works-title">A clearer way to understand your running.</h2>
+                <p>
+                    Connect once, then let StriveAI turn your recent training into useful context.
+                </p>
+            </div>
+
+            <div class="how-it-works-grid">
+                <article class="how-it-works-step">
+                    <span class="step-number">01</span>
+                    <h3>Connect Strava</h3>
+                    <p>Securely connect your Strava account so your activities can be viewed in one dashboard.</p>
+                </article>
+
+                <article class="how-it-works-step">
+                    <span class="step-number">02</span>
+                    <h3>See your activity</h3>
+                    <p>Review recent runs, distances, pace, heart rate, elevation, and your most active sports.</p>
+                </article>
+
+                <article class="how-it-works-step">
+                    <span class="step-number">03</span>
+                    <h3>Train with context</h3>
+                    <p>Get an AI running summary and practical training recommendations based on your data and goals.</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="gallery" class="gallery-section" aria-labelledby="gallery-title">
+            <div class="section-heading gallery-heading">
+                <p class="section-kicker">STRIVEAI IN ACTION</p>
+                <h2 id="gallery-title">Your training story, at a glance.</h2>
+            </div>
+
+            <div class="gallery-grid">
+                <figure class="gallery-card">
+                    <figcaption>
+                        <strong>Running summary</strong>
+                        <span>See your recent activity overview and top sport.</span>
+                    </figcaption>
+                    <img src="images/summary_top_sport.png" alt="StriveAI running summary and top sport view">
+                </figure>
+
+                <figure class="gallery-card">
+                    <figcaption>
+                        <strong>Training recommendations</strong>
+                        <span>Turn a personal goal into practical next steps.</span>
+                    </figcaption>
+                    <img src="images/coach.png" alt="StriveAI training recommendations view">
+                </figure>
+
+                <figure class="gallery-card">
+                    <figcaption>
+                        <strong>AI running analysis and recommendations</strong>
+                        <span>Understand the story behind your recent runs.</span>
+                    </figcaption>
+                    <img src="images/ai_analysis.png" alt="StriveAI AI running analysis view">
+                </figure>
+
+                <figure class="gallery-card">
+                    <figcaption>
+                        <strong>Recent activities</strong>
+                        <span>Keep your Strava activity history easy to scan.</span>
+                    </figcaption>
+                    <img src="images/recent_activities.png" alt="StriveAI recent activities list">
+                </figure>
+            </div>
+        </section>
+
+        <footer class="landing-footer">
+            <span>StriveAI</span>
+            <span>Running insights built around your training.</span>
+        </footer>
     </main>
 
     <script src="js/login.js"></script>
-
 </body>
 
 </html>
