@@ -15,7 +15,7 @@ Click the image above to watch the full walkthrough on Loom.
 
 StriveAI connects to Strava, analyzes recent training, and uses AI to provide personalized insights and training recommendations.
 
-> **Current status:** First production deployment. Core functionality is live and working end-to-end; I'm continuing to improve the training recommendation logic, user experience, and reliability.
+> **Current status:** StriveAI was deployed to production on Railway and ran end-to-end. The live deployment is now offline; the Loom demo above shows the full walkthrough.
 
 ## What it does
 
