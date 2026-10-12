@@ -11,11 +11,11 @@
 
 Click the image above to watch the full walkthrough on Loom.
 
-> **Access note:** This project currently supports up to 10 authorized users, in line with the current access restrictions for the Strava application.
+> **Access note:** StriveAI has a capacity of 10 authorized users because of Strava's API access policies. The service is currently offline for some time.
 
 StriveAI connects to Strava, analyzes recent training, and uses AI to provide personalized insights and training recommendations.
 
-> **Current status:** StriveAI was deployed to production on Railway and ran end-to-end. The live deployment is now offline; the Loom demo above shows the full walkthrough.
+> **Current status:** StriveAI was deployed to production on Railway and ran end-to-end. The live deployment is temporarily offline; the Loom demo above shows the full walkthrough.
 
 ## What it does
 
