@@ -5,8 +5,6 @@
 
 > An AI-powered platform which turns your Strava training history into personalized performance insights and actionable training recommendations.
 
-**🚀 Link:** https://go-service-production-eace.up.railway.app
-
 ## Demo
 
 [![Watch the StriveAI demo](docs/screenshots/demo-thumbnail.png)](https://www.loom.com/share/6de1a04507214bc4b6a99410c8842e22)
