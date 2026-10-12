@@ -5,19 +5,17 @@
 
 > An AI-powered platform which turns your Strava training history into personalized performance insights and actionable training recommendations.
 
-**🚀 Link:** https://go-service-production-eace.up.railway.app
-
 ## Demo
 
 [![Watch the StriveAI demo](docs/screenshots/demo-thumbnail.png)](https://www.loom.com/share/6de1a04507214bc4b6a99410c8842e22)
 
 Click the image above to watch the full walkthrough on Loom.
 
-> **Access note:** This project currently supports up to 10 authorized users, in line with the current access restrictions for the Strava application.
+> **Access note:** StriveAI has a capacity of 10 authorized users because of Strava's API access policies. The service is currently offline for some time.
 
 StriveAI connects to Strava, analyzes recent training, and uses AI to provide personalized insights and training recommendations.
 
-> **Current status:** First production deployment. Core functionality is live and working end-to-end; I'm continuing to improve the training recommendation logic, user experience, and reliability.
+> **Current status:** StriveAI was deployed to production on Railway and ran end-to-end. The live deployment is temporarily offline; the Loom demo above shows the full walkthrough.
 
 ## What it does
 
